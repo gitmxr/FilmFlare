@@ -1,16 +1,21 @@
 import React from 'react';
-import Header from './assets/Components/Header/Header';
-import Footer from './assets/Components/Footer/Footer';
+import Footer from './Components/Footer/Footer';
+import ScrollToTopButton from './Components/ScrollToTopButton/ScrollToTopButton';
+import ScrollToTop from './Components/ScrollToTop/ScrolToTop'
+
 import { Outlet } from 'react-router-dom';
 
 function Layout() {
-    return ( 
-        <>
-        <Header />
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      <ScrollToTop /> {/* Scroll to top on route change */}
+      <main className="flex-grow">
         <Outlet />
-        <Footer />
-        </>
-     );
+      </main>
+      <Footer />
+      <ScrollToTopButton />
+    </div>
+  );
 }
 
 export default Layout;
