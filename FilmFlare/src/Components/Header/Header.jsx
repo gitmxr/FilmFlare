@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "/src/assets/images/filmflare-logo.webp";
+import logo from "/src/assets/images/filmflare_logo.webp";
 
 function Header({ searchQuery, setSearchQuery }) {
   const handleSearch = () => {
