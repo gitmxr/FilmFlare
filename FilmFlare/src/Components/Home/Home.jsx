@@ -84,7 +84,7 @@ function Home() {
     <div className="bg-black text-white min-h-screen">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <div className="pt-4 sm:pt-6 px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="pt-4 sm:pt-6 px-4 sm:px-6 pb-20 max-w-7xl mx-auto">
         {/* Loading State */}
         {loading ? (
           <div className="text-center text-gray-400 py-10 animate-pulse">

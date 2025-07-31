@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import MovieCard from "../MovieCard/MovieCard"; // Update the path as needed
+import MovieCard from "../MovieCard/MovieCard"; 
 
 function MovieDetail() {
   const { id } = useParams();
@@ -69,8 +69,9 @@ function MovieDetail() {
           ← Back to Home
         </Link>
 
+        {/* Movie Detail Section */}
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
-          {/* Poster Image */}
+          {/* Poster */}
           <div className="w-full md:w-1/3">
             <div className="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-lg">
               <img
@@ -85,7 +86,7 @@ function MovieDetail() {
             </div>
           </div>
 
-          {/* Movie Details */}
+          {/* Movie Info */}
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-yellow-400 mb-4">
               {movie.title}
@@ -108,6 +109,7 @@ function MovieDetail() {
               {movie.overview}
             </p>
 
+            {/* Trailer */}
             {trailer ? (
               <div className="mt-6">
                 <h2 className="text-lg sm:text-xl font-semibold mb-2">
@@ -130,12 +132,15 @@ function MovieDetail() {
           </div>
         </div>
 
+        {/* Similar Movies Section */}
         {similarMovies.length > 0 && (
           <div className="mt-10">
             <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
               Similar Movies
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            {/* Responsive Grid Same as Home Page */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {similarMovies.map((movie) => (
                 <MovieCard
                   key={movie.id}

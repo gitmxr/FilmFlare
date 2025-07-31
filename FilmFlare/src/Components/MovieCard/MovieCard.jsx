@@ -10,7 +10,8 @@ function MovieCard({ movie, posterBaseUrl }) {
       to={`/movie/${movie.id}`}
       className="transition-transform transform hover:scale-105 w-full max-w-xs"
     >
-      <div className="bg-gray-900 rounded-xl shadow-lg p-3 text-white hover:shadow-2xl transition duration-300 flex flex-col items-center">
+      <div className="bg-gray-900 rounded-xl shadow-lg p-3 text-white hover:shadow-2xl transition duration-300 flex flex-col items-center h-full">
+        {/* Poster Image */}
         <div className="w-full aspect-[2/3] rounded-lg overflow-hidden">
           <img
             src={posterUrl}
@@ -18,11 +19,17 @@ function MovieCard({ movie, posterBaseUrl }) {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="mt-3 text-center w-full">
-          <h2 className="text-base font-semibold line-clamp-2">{movie.title}</h2>
+
+        {/* Movie Info */}
+        <div className="mt-3 text-center w-full flex flex-col justify-between flex-grow">
+          <h2 className="text-base font-semibold line-clamp-2 min-h-[3rem]">
+            {movie.title}
+          </h2>
+
           <div className="mt-1 text-sm text-yellow-400 flex items-center justify-center gap-1">
             ⭐ {movie.vote_average?.toFixed(1)} / 10
           </div>
+
           <p className="text-xs text-gray-400 mt-1">
             {movie.release_date ? movie.release_date.slice(0, 4) : "N/A"}
           </p>
