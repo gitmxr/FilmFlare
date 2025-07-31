@@ -60,35 +60,41 @@ function MovieDetail() {
   }
 
   return (
-    <div className="bg-black min-h-screen text-white p-6">
+    <div className="bg-black min-h-screen text-white p-4 sm:p-6">
       <div className="max-w-5xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-1 mb-6 text-sm text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700 transition duration-200"
+          className="inline-flex items-center gap-1 mb-4 sm:mb-6 text-sm text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700 transition duration-200"
         >
           ← Back to Home
         </Link>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <img
-            src={
-              movie.poster_path
-                ? `${posterBaseUrl}${movie.poster_path}`
-                : "https://via.placeholder.com/300"
-            }
-            alt={movie.title}
-            className="w-full md:w-1/3 rounded-lg shadow-lg"
-          />
+        <div className="flex flex-col md:flex-row gap-6 sm:gap-8">
+          {/* Poster Image */}
+          <div className="w-full md:w-1/3">
+            <div className="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-lg">
+              <img
+                src={
+                  movie.poster_path
+                    ? `${posterBaseUrl}${movie.poster_path}`
+                    : "https://via.placeholder.com/300"
+                }
+                alt={movie.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
 
+          {/* Movie Details */}
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-yellow-400 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-yellow-400 mb-4">
               {movie.title}
             </h1>
-            <p className="text-gray-300 mb-2">
+            <p className="text-gray-300 mb-2 text-sm sm:text-base">
               <span className="font-semibold">Release Date:</span>{" "}
               {movie.release_date}
             </p>
-            <p className="text-gray-300 mb-2">
+            <p className="text-gray-300 mb-2 text-sm sm:text-base">
               <span className="font-semibold">Rating:</span> ⭐{" "}
               {movie.vote_average.toFixed(1)} / 10 ({movie.vote_count} votes)
             </p>
@@ -98,19 +104,23 @@ function MovieDetail() {
             <p className="text-sm text-gray-300 mt-1">
               Runtime: {movie.runtime} min
             </p>
-            <p className="text-gray-200 mt-4">{movie.overview}</p>
+            <p className="text-gray-200 mt-4 text-sm sm:text-base">
+              {movie.overview}
+            </p>
 
             {trailer ? (
               <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-2">Watch Trailer</h2>
-                <div className="aspect-w-16 aspect-h-9">
+                <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                  Watch Trailer
+                </h2>
+                <div className="aspect-video w-full rounded-lg overflow-hidden">
                   <iframe
                     src={`https://www.youtube.com/embed/${trailer.key}`}
                     title="Trailer"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="w-full h-64 rounded-lg"
+                    className="w-full h-full"
                   ></iframe>
                 </div>
               </div>
@@ -122,10 +132,10 @@ function MovieDetail() {
 
         {similarMovies.length > 0 && (
           <div className="mt-10">
-            <h2 className="text-xl font-semibold text-white mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
               Similar Movies
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {similarMovies.map((movie) => (
                 <MovieCard
                   key={movie.id}

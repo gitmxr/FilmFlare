@@ -14,12 +14,13 @@ function Contact() {
           reach out via the platforms below.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-lg">
           <a
             href="https://github.com/gitmxr"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:text-red-500 transition"
+            aria-label="GitHub"
+            className="flex items-center gap-2 hover:text-red-500 transition duration-200"
           >
             <FaGithub size={20} /> GitHub
           </a>
@@ -27,13 +28,15 @@ function Contact() {
             href="https://linkedin.com/in/riazdev18"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:text-red-500 transition"
+            aria-label="LinkedIn"
+            className="flex items-center gap-2 hover:text-red-500 transition duration-200"
           >
             <FaLinkedin size={20} /> LinkedIn
           </a>
           <a
-            href="mailto:riazdev18@@gmail.com"
-            className="flex items-center gap-2 hover:text-red-500 transition"
+            href="mailto:riazdev18@gmail.com"
+            aria-label="Email"
+            className="flex items-center gap-2 hover:text-red-500 transition duration-200"
           >
             <FaEnvelope size={20} /> Email
           </a>

@@ -6,13 +6,18 @@ function MovieCard({ movie, posterBaseUrl }) {
     : "https://via.placeholder.com/300x450?text=No+Image";
 
   return (
-    <Link to={`/movie/${movie.id}`} className="transition-transform transform hover:scale-105">
-      <div className="bg-gray-900 rounded-xl shadow-lg m-4 p-3 w-52 md:w-60 text-white hover:shadow-2xl transition duration-300 flex flex-col items-center">
-        <img
-          src={posterUrl}
-          alt={movie.title}
-          className="w-full h-72 object-cover rounded-lg"
-        />
+    <Link
+      to={`/movie/${movie.id}`}
+      className="transition-transform transform hover:scale-105 w-full max-w-xs"
+    >
+      <div className="bg-gray-900 rounded-xl shadow-lg p-3 text-white hover:shadow-2xl transition duration-300 flex flex-col items-center">
+        <div className="w-full aspect-[2/3] rounded-lg overflow-hidden">
+          <img
+            src={posterUrl}
+            alt={movie.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="mt-3 text-center w-full">
           <h2 className="text-base font-semibold line-clamp-2">{movie.title}</h2>
           <div className="mt-1 text-sm text-yellow-400 flex items-center justify-center gap-1">

@@ -10,9 +10,9 @@ function Header({ searchQuery, setSearchQuery }) {
 
   return (
     <header className="bg-black text-white shadow-lg sticky top-0 z-20">
-      <div className="relative max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-        {/* Logo & App Name (Left) */}
-        <div className="flex items-center space-x-2 z-10">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Logo & App Name */}
+        <div className="flex items-center space-x-2">
           <img
             src={logo}
             alt="FilmFlare Logo"
@@ -23,8 +23,8 @@ function Header({ searchQuery, setSearchQuery }) {
           </span>
         </div>
 
-        {/* Search Bar (Centered Absolutely) */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 w-full max-w-xl z-0">
+        {/* Search Bar */}
+        <div className="w-full md:max-w-xl">
           <div className="flex rounded-3xl shadow-lg overflow-hidden border border-gray-700">
             <input
               type="text"
@@ -42,11 +42,12 @@ function Header({ searchQuery, setSearchQuery }) {
           </div>
         </div>
 
-        {/* Navigation Links (Right) */}
-        <nav className="space-x-4 z-10">
+        {/* Navigation Links */}
+        <nav className="flex space-x-4">
           <Link to="/" className="hover:text-red-500 transition duration-200">
             Home
           </Link>
+          {/* Add more links here if needed */}
         </nav>
       </div>
     </header>
