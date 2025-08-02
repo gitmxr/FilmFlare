@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import {
   fetchTrendingMovies,
   fetchTopRatedMovies,
@@ -9,45 +10,39 @@ import {
 import Header from "../Header/Header";
 import MovieCard from "../MovieCard/MovieCard";
 
+export async function homeLoader() {
+  try {
+    const [trending, topRated, bollywood, hollywood] = await Promise.all([
+      fetchTrendingMovies(),
+      fetchTopRatedMovies(),
+      fetchBollywoodMovies(),
+      fetchHollywoodMovies(),
+    ]);
+
+    return {
+      trending,
+      topRated,
+      bollywood,
+      hollywood,
+    };
+  } catch (error) {
+    console.error("Loader failed:", error);
+    return {
+      trending: [],
+      topRated: [],
+      bollywood: [],
+      hollywood: [],
+    };
+  }
+}
+
 function Home() {
+  const { trending, topRated, bollywood, hollywood } = useLoaderData();
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [bollywoodMovies, setBollywoodMovies] = useState([]);
-  const [hollywoodMovies, setHollywoodMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const posterBaseUrl = "https://image.tmdb.org/t/p/w500";
-
-  useEffect(() => {
-    const fetchAllMovies = async () => {
-      setLoading(true);
-      try {
-        const [
-          trending,
-          topRated,
-          bollywood,
-          hollywood,
-        ] = await Promise.all([
-          fetchTrendingMovies(),
-          fetchTopRatedMovies(),
-          fetchBollywoodMovies(),
-          fetchHollywoodMovies(),
-        ]);
-        setTrendingMovies(trending);
-        setTopRatedMovies(topRated);
-        setBollywoodMovies(bollywood);
-        setHollywoodMovies(hollywood);
-      } catch (error) {
-        console.error("Failed to fetch movie data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllMovies();
-  }, []);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -85,40 +80,31 @@ function Home() {
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="pt-4 sm:pt-6 px-4 sm:px-6 pb-20 max-w-7xl mx-auto">
-        {/* Loading State */}
-        {loading ? (
-          <div className="text-center text-gray-400 py-10 animate-pulse">
-            Loading movies...
-          </div>
-        ) : (
-          <>
-            {/* Search Results Section */}
-            {searchResults.length > 0 && (
-              <div className="mb-10">
-                <div className="text-left w-full mb-4">
-                  <div className="inline-block text-2xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 rounded-xl shadow-lg">
-                    🔍 Search Results
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {searchResults.map((movie) => (
-                    <MovieCard
-                      key={movie.id}
-                      movie={movie}
-                      posterBaseUrl={posterBaseUrl}
-                    />
-                  ))}
-                </div>
+        {/* Search Results Section */}
+        {searchResults.length > 0 && (
+          <div className="mb-10">
+            <div className="text-left w-full mb-4">
+              <div className="inline-block text-2xl font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 rounded-xl shadow-lg">
+                🔍 Search Results
               </div>
-            )}
-
-            {/* Main Sections */}
-            {renderMovieSection("Trending Movies", trendingMovies)}
-            {renderMovieSection("Top Rated Movies", topRatedMovies)}
-            {renderMovieSection("Bollywood Movies", bollywoodMovies)}
-            {renderMovieSection("Hollywood Movies", hollywoodMovies)}
-          </>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {searchResults.map((movie) => (
+                <MovieCard
+                  key={movie.id}
+                  movie={movie}
+                  posterBaseUrl={posterBaseUrl}
+                />
+              ))}
+            </div>
+          </div>
         )}
+
+        {/* Main Sections */}
+        {renderMovieSection("Trending Movies", trending)}
+        {renderMovieSection("Top Rated Movies", topRated)}
+        {renderMovieSection("Bollywood Movies", bollywood)}
+        {renderMovieSection("Hollywood Movies", hollywood)}
       </div>
     </div>
   );
