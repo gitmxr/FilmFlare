@@ -78,9 +78,10 @@ function MovieDetail() {
 
         {similarMovies.length > 0 && (
           <div className="mt-10">
-            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white border-l-4 border-red-600 pl-4 mb-4">
               Similar Movies
             </h2>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {similarMovies.map((movie) => (
                 <MovieCard
