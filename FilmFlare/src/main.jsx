@@ -4,11 +4,12 @@ import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
-import Home, { homeLoader } from "./Components/Home/Home"; 
+import Home from "./Components/Home/Home";
 import About from "./Components/About/About";
 import Contact from "./Components/Contact/Contact";
-import MovieDetail, { movieDetailLoader } from './Components/MovieDetail/MovieDetail';
+import MovieDetail, { movieDetailLoader } from "./Components/MovieDetail/MovieDetail";
 
+import { homeLoader } from "./loaders/homeLoader";
 
 const router = createBrowserRouter([
   {
@@ -16,9 +17,9 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "",
+        index: true, 
         element: <Home />,
-        loader: homeLoader, 
+        loader: homeLoader,
       },
       {
         path: "about",

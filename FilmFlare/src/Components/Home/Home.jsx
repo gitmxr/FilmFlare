@@ -1,62 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { useLoaderData } from "react-router-dom";
-import {
-  fetchTrendingMovies,
-  fetchTopRatedMovies,
-  fetchBollywoodMovies,
-  fetchHollywoodMovies,
-  searchMovies,
-} from "../../services/TMDbAPI_Call";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import Header from "../Header/Header";
 import MovieCard from "../MovieCard/MovieCard";
-
-export async function homeLoader() {
-  try {
-    const [trending, topRated, bollywood, hollywood] = await Promise.all([
-      fetchTrendingMovies(),
-      fetchTopRatedMovies(),
-      fetchBollywoodMovies(),
-      fetchHollywoodMovies(),
-    ]);
-
-    return {
-      trending,
-      topRated,
-      bollywood,
-      hollywood,
-    };
-  } catch (error) {
-    console.error("Loader failed:", error);
-    return {
-      trending: [],
-      topRated: [],
-      bollywood: [],
-      hollywood: [],
-    };
-  }
-}
+import { searchMovies } from "../../services/TMDbAPI_Call";
 
 function Home() {
-  const { trending, topRated, bollywood, hollywood } = useLoaderData();
+  const {
+    trending, topRated, bollywood, hollywood,
+    trendingPage, topRatedPage, bollywoodPage, hollywoodPage
+  } = useLoaderData();
 
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
   const posterBaseUrl = "https://image.tmdb.org/t/p/w500";
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim() !== "") {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim()) {
         searchMovies(searchQuery).then(setSearchResults);
-      } else {
-        setSearchResults([]);
-      }
-    }, 500); // debounce for 500ms
-
-    return () => clearTimeout(delayDebounce);
+      } else setSearchResults([]);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const renderMovieSection = (title, movies) => (
+  const goToPage = (param, page) => {
+    const params = new URLSearchParams();
+    params.set(param, page);
+    navigate(`?${params.toString()}`);
+  };
+
+  const PaginationButtons = ({ page, param }) => (
+    <div className="flex justify-end mt-4 gap-2">
+      <button
+        onClick={() => goToPage(param, page - 1)}
+        disabled={page <= 1}
+        className={`px-4 py-1 rounded transition ${
+          page <= 1
+            ? "bg-gray-600 cursor-not-allowed text-gray-300"
+            : "bg-red-600 hover:bg-red-700 text-white"
+        }`}
+      >
+        ← Prev
+      </button>
+      <button
+        onClick={() => goToPage(param, page + 1)}
+        className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded transition"
+      >
+        Next →
+      </button>
+    </div>
+  );
+
+  const renderSection = (title, movies, page, param) => (
     <>
       <div className="text-left w-full mt-8 mb-4">
         <h2 className="text-2xl sm:text-3xl font-bold text-white border-l-4 border-red-600 pl-4">
@@ -64,23 +61,18 @@ function Home() {
         </h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {movies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            posterBaseUrl={posterBaseUrl}
-          />
+        {movies.map((m) => (
+          <MovieCard key={m.id} movie={m} posterBaseUrl={posterBaseUrl} />
         ))}
       </div>
+      <PaginationButtons page={page} param={param} />
     </>
   );
 
   return (
     <div className="bg-black text-white min-h-screen">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
       <div className="pt-4 sm:pt-6 px-4 sm:px-6 pb-20 max-w-7xl mx-auto">
-        {/* Search Results Section */}
         {searchResults.length > 0 && (
           <div className="mb-10">
             <div className="text-left w-full mb-4">
@@ -89,22 +81,16 @@ function Home() {
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {searchResults.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  posterBaseUrl={posterBaseUrl}
-                />
+              {searchResults.map((m) => (
+                <MovieCard key={m.id} movie={m} posterBaseUrl={posterBaseUrl} />
               ))}
             </div>
           </div>
         )}
-
-        {/* Main Sections */}
-        {renderMovieSection("Trending Movies", trending)}
-        {renderMovieSection("Top Rated Movies", topRated)}
-        {renderMovieSection("Bollywood Movies", bollywood)}
-        {renderMovieSection("Hollywood Movies", hollywood)}
+        {renderSection("Trending", trending, trendingPage, "trendingPage")}
+        {renderSection("Top Rated", topRated, topRatedPage, "topRatedPage")}
+        {renderSection("Bollywood", bollywood, bollywoodPage, "bollywoodPage")}
+        {renderSection("Hollywood", hollywood, hollywoodPage, "hollywoodPage")}
       </div>
     </div>
   );
