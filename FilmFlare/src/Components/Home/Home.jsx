@@ -87,10 +87,10 @@ function Home() {
             </div>
           </div>
         )}
-        {renderSection("Trending", trending, trendingPage, "trendingPage")}
-        {renderSection("Top Rated", topRated, topRatedPage, "topRatedPage")}
-        {renderSection("Bollywood", bollywood, bollywoodPage, "bollywoodPage")}
-        {renderSection("Hollywood", hollywood, hollywoodPage, "hollywoodPage")}
+        {renderSection("Trending Movies", trending, trendingPage, "trendingPage")}
+        {renderSection("Top Rated Movies", topRated, topRatedPage, "topRatedPage")}
+        {renderSection("Bollywood Movies", bollywood, bollywoodPage, "bollywoodPage")}
+        {renderSection("Hollywood Movies", hollywood, hollywoodPage, "hollywoodPage")}
       </div>
     </div>
   );
