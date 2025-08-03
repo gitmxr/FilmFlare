@@ -71,8 +71,26 @@ function Home() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <div className="pt-4 sm:pt-6 px-4 sm:px-6 pb-20 max-w-7xl mx-auto">
+      {/* Moved Search Bar here */}
+      <div className="pt-4 sm:pt-6 px-4 sm:px-6 pb-4 max-w-7xl mx-auto">
+        <div className="flex rounded-3xl shadow-lg overflow-hidden border border-gray-700 max-w-xl mx-auto">
+          <input
+            type="text"
+            placeholder="Search for movies..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 px-4 flex-grow bg-white text-black outline-none"
+          />
+          <button
+            className="bg-red-600 text-white px-4 rounded-r-3xl hover:bg-red-700 transition duration-200"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      {/* Movies and Results Section */}
+      <div className="px-4 sm:px-6 pb-20 max-w-7xl mx-auto">
         {searchResults.length > 0 && (
           <div className="mb-10">
             <div className="text-left w-full mb-4">
@@ -87,6 +105,7 @@ function Home() {
             </div>
           </div>
         )}
+
         {renderSection("Trending Movies", trending, trendingPage, "trendingPage")}
         {renderSection("Top Rated Movies", topRated, topRatedPage, "topRatedPage")}
         {renderSection("Bollywood Movies", bollywood, bollywoodPage, "bollywoodPage")}

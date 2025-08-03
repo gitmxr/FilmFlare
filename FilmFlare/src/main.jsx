@@ -7,19 +7,27 @@ import Layout from "./Layout";
 import Home from "./Components/Home/Home";
 import About from "./Components/About/About";
 import Contact from "./Components/Contact/Contact";
-import MovieDetail, { movieDetailLoader } from "./Components/MovieDetail/MovieDetail";
-
+import MovieDetail, {
+  movieDetailLoader,
+} from "./Components/MovieDetail/MovieDetail";
+import Music from "./Components/Music/Music";
+import MusicDetail from "./Components/Music/MusicDetail";
+import { musicDetailLoader } from "./loaders/musicDetailLoader";
 import { homeLoader } from "./loaders/homeLoader";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <Layout />, // All pages wrapped with Layout (includes Header now)
     children: [
       {
-        index: true, 
+        index: true,
         element: <Home />,
         loader: homeLoader,
+      },
+      {
+        path: "music",
+        element: <Music />,
       },
       {
         path: "about",
@@ -33,6 +41,11 @@ const router = createBrowserRouter([
         path: "movie/:id",
         element: <MovieDetail />,
         loader: movieDetailLoader,
+      },
+      {
+        path: "music/:id",
+        element: <MusicDetail />,
+        loader: musicDetailLoader,
       },
     ],
   },
