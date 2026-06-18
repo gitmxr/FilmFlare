@@ -4,6 +4,11 @@ import { act } from "react";
 import * as React from "react";
 import { afterEach, vi } from "vitest";
 
+declare global {
+  // eslint-disable-next-line no-var
+  var IS_REACT_ACT_ENVIRONMENT: boolean;
+}
+
 // Required for React 19 + @testing-library/react (fixes "React.act is not a function")
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
