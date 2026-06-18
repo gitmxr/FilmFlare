@@ -1,6 +1,15 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
+import { act } from "react";
+import * as React from "react";
 import { afterEach, vi } from "vitest";
+
+// Required for React 19 + @testing-library/react (fixes "React.act is not a function")
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+if (typeof React.act !== "function") {
+  (React as typeof React & { act: typeof act }).act = act;
+}
 
 afterEach(() => {
   cleanup();

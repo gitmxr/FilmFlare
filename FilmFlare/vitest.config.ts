@@ -9,6 +9,11 @@ export default defineConfig({
     setupFiles: ["./tests/setup.tsx"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", ".next", "dist", "src/**"],
+    server: {
+      deps: {
+        inline: ["react", "react-dom", "@testing-library/react"],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
