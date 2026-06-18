@@ -9,7 +9,7 @@ declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean;
 }
 
-// Required for React 19 + @testing-library/react (fixes "React.act is not a function")
+// Required for React 19 + @testing-library/react
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 if (typeof React.act !== "function") {

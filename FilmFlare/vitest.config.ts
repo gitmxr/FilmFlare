@@ -9,6 +9,9 @@ export default defineConfig({
     setupFiles: ["./tests/setup.tsx"],
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", ".next", "dist", "src/**"],
+    env: {
+      NODE_ENV: "development",
+    },
     server: {
       deps: {
         inline: ["react", "react-dom", "@testing-library/react"],
@@ -25,5 +28,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "."),
     },
+    dedupe: ["react", "react-dom"],
   },
 });

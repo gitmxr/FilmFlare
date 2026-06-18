@@ -13,9 +13,9 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "analyze": "cross-env ANALYZE=true next build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test": "cross-env NODE_ENV=development vitest run",
+    "test:watch": "cross-env NODE_ENV=development vitest",
+    "test:coverage": "cross-env NODE_ENV=development vitest run --coverage"
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
