@@ -10,7 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
 *.local
+.env
+tsconfig.tsbuildinfo
+
+# Test output
+coverage
 
 # Editor directories and files
 .vscode/*

@@ -1,12 +1,144 @@
-# React + Vite
+# FilmFlare
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Movie and music discovery app built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **Zustand**. Data is powered by the TMDB and YouTube APIs via server-side API routes.
 
-Currently, two official plugins are available:
+**Live (legacy Vite):** https://film-flare-beryl.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## Expanding the ESLint configuration
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Zustand + SWR
+- Framer Motion
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Prerequisites
+
+- Node.js 20+
+- npm 10+
+- TMDB API key — https://www.themoviedb.org/settings/api
+- YouTube Data API key — https://console.cloud.google.com/
+
+## Local development
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy environment variables:
+
+```bash
+cp .env.local.example .env.local
+```
+
+3. Add your API keys to `.env.local`:
+
+```env
+TMDB_API_KEY=your_tmdb_api_key
+YOUTUBE_API_KEY=your_youtube_api_key
+```
+
+4. Start the dev server:
+
+```bash
+npm run dev
+```
+
+Open http://localhost:3000
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Next.js development server |
+| `npm run build` | Production build |
+| `npm run start` | Run production server locally |
+| `npm run type-check` | TypeScript validation |
+| `npm run lint` | ESLint |
+| `npm run test` | Run Vitest test suite |
+| `npm run test:coverage` | Tests with coverage report |
+| `npm run analyze` | Bundle analysis build |
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `TMDB_API_KEY` | Yes | Server-only TMDB API key |
+| `YOUTUBE_API_KEY` | Yes | Server-only YouTube API key |
+| `NEXT_PUBLIC_SITE_URL` | No | Public site URL for metadata (e.g. `https://filmflare.vercel.app`) |
+
+Never commit `.env`, `.env.local`, or production secrets. Use `.env.local.example` and `.env.production.example` as templates.
+
+## Deploy to Vercel
+
+### 1. Connect repository
+
+1. Push this project to GitHub.
+2. Import the repo in [Vercel](https://vercel.com/new).
+3. Framework preset: **Next.js** (auto-detected).
+
+### 2. Configure environment variables
+
+In Vercel → Project → Settings → Environment Variables, add:
+
+| Name | Environments |
+|------|----------------|
+| `TMDB_API_KEY` | Production, Preview, Development |
+| `YOUTUBE_API_KEY` | Production, Preview, Development |
+| `NEXT_PUBLIC_SITE_URL` | Production (your production domain) |
+
+### 3. Build settings
+
+`vercel.json` runs quality checks before each deploy:
+
+```bash
+npm run type-check && npm run test && npm run build
+```
+
+### 4. Deploy
+
+- **Production:** merge to `main` (or your default branch) with auto-deploy enabled.
+- **Preview:** every pull request gets a preview URL.
+
+### 5. Post-deploy checks
+
+- [ ] Home page loads with movie sections
+- [ ] Search works (movies + music)
+- [ ] Movie detail pages show trailers
+- [ ] Music detail pages embed YouTube
+- [ ] `/api/health` returns `{ "status": "ok" }`
+- [ ] Vercel Analytics dashboard shows traffic
+
+### Health endpoint
+
+```
+GET /api/health
+```
+
+Returns `200` when API keys are configured, `503` if missing.
+
+### Rollback
+
+If a deployment fails:
+
+1. Vercel Dashboard → Deployments → select last working deployment → **Promote to Production**
+2. Or revert the git commit and redeploy.
+
+## Security
+
+- API keys are server-only (never prefixed with `NEXT_PUBLIC_`)
+- Security headers configured in `next.config.ts`
+- `.env` files are gitignored
+
+## Legacy Vite app
+
+The original React + Vite app remains in `/src` for reference during migration. Run it with:
+
+```bash
+npm run dev:vite
+```
+
+This will be removed in Phase 12 after final QA.
