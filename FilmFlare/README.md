@@ -2,7 +2,7 @@
 
 Movie and music discovery app built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **Zustand**. Data is powered by the TMDB and YouTube APIs via server-side API routes.
 
-**Live (legacy Vite):** https://film-flare-beryl.vercel.app
+**Live:** https://film-flare-ecdci6vs8-muhammad-riazs-projects-54f53794.vercel.app/
 
 ## Stack
 
@@ -135,10 +135,4 @@ If a deployment fails:
 
 ## Legacy Vite app
 
-The original React + Vite app remains in `/src` for reference during migration. Run it with:
-
-```bash
-npm run dev:vite
-```
-
-This will be removed in Phase 12 after final QA.
+The original React + Vite codebase is preserved on the `legacy/react-vite` git branch for reference.
