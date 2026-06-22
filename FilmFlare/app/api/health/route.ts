@@ -12,10 +12,6 @@ export async function GET() {
     {
       status: healthy ? "ok" : "degraded",
       timestamp: new Date().toISOString(),
-      checks: {
-        tmdbApiKey: hasTmdbKey,
-        youtubeApiKey: hasYoutubeKey,
-      },
     },
     { status: healthy ? 200 : 503 }
   );

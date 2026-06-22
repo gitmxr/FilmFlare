@@ -10,7 +10,6 @@ export class ApiError extends Error {
 
 export function getErrorMessage(error: unknown, fallback = "Internal server error") {
   if (error instanceof ApiError) return error.message;
-  if (error instanceof Error) return error.message;
   return fallback;
 }
 

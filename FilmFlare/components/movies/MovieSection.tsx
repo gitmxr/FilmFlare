@@ -32,6 +32,7 @@ export default function MovieSection({
         param={param}
         onPageChange={onPageChange}
         isPending={isPending}
+        hasNextPage={movies.length > 0}
       />
     </section>
   );

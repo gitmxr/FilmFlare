@@ -1,10 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
-const navLinks = [
-  { href: "/", label: "Movies" },
-  { href: "/music", label: "Musics" },
-];
+import NavLinks from "@/components/ui/NavLinks";
 
 export default function Header() {
   return (
@@ -24,17 +20,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="flex space-x-4">
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded px-3 py-2 text-white transition duration-200 hover:text-red-500"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+        <NavLinks />
       </div>
     </header>
   );

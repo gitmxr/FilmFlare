@@ -2,7 +2,7 @@
 
 Movie and music discovery app built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **Zustand**. Data is powered by the TMDB and YouTube APIs via server-side API routes.
 
-**Live:** https://film-flare-ecdci6vs8-muhammad-riazs-projects-54f53794.vercel.app/
+**Live:** https://film-flare.vercel.app
 
 ## Stack
 
@@ -118,7 +118,7 @@ npm run type-check && npm run test && npm run build
 GET /api/health
 ```
 
-Returns `200` when API keys are configured, `503` if missing.
+Returns `200` with `{ "status": "ok", "timestamp": "..." }` when API keys are configured, or `503` with `{ "status": "degraded" }` if missing.
 
 ### Rollback
 

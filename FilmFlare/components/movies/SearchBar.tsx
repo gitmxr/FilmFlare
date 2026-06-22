@@ -22,21 +22,27 @@ export default function SearchBar({
       <div className="overflow-hidden rounded-3xl border border-gray-700 shadow-lg">
         <div className="flex">
           <input
-            type="text"
+            type="search"
             placeholder="Search for movies..."
             value={value}
             onChange={(event) => onChange(event.target.value)}
             className="flex-grow bg-white p-2 px-4 text-black outline-none"
             aria-label="Search for movies"
-          />
-          <button
-            type="button"
-            className="bg-red-600 px-4 text-white transition duration-200 hover:bg-red-700 disabled:opacity-70"
-            disabled={isSearching}
             aria-busy={isSearching}
+          />
+          <div
+            className="flex items-center bg-red-600 px-4 text-white"
+            aria-live="polite"
+            aria-hidden={!isSearching}
           >
-            {isSearching ? "..." : "Search"}
-          </button>
+            {isSearching ? (
+              <span className="text-sm">Searching…</span>
+            ) : (
+              <span className="text-sm" aria-hidden="true">
+                Search
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

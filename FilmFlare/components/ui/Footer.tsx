@@ -30,7 +30,10 @@ export default function Footer() {
     <footer className="mt-10 border-t border-gray-700 bg-gray-900 py-10 text-gray-300">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:px-6 md:grid-cols-3">
         <div className="flex flex-col items-center text-center md:items-start md:text-left">
-          <h2 className="mb-2 text-2xl font-bold text-white">🎬 FilmFlare</h2>
+          <h2 className="mb-2 text-2xl font-bold text-white">
+            <span aria-hidden="true">🎬 </span>
+            FilmFlare
+          </h2>
           <p className="text-sm text-gray-400">
             Discover the latest movies, watch trailers, and explore top-rated
             films.
@@ -73,7 +76,8 @@ export default function Footer() {
       </div>
 
       <div className="mt-8 border-t border-gray-700 px-4 pt-4 text-center text-sm text-gray-500 sm:px-0">
-        © 2025 <span className="font-semibold text-white">FilmFlare</span>. All
+        © {new Date().getFullYear()}{" "}
+        <span className="font-semibold text-white">FilmFlare</span>. All
         rights reserved.
       </div>
     </footer>

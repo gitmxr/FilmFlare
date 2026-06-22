@@ -1,13 +1,18 @@
 import type { MusicDetailData, YouTubeSearchItem, YouTubeVideoItem } from "@/lib/types";
 import { REVALIDATE } from "./cache";
 import { ApiError } from "./errors";
+import {
+  validatePageToken,
+  validateSearchQuery,
+  validateYouTubeVideoId,
+} from "./validation";
 
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 
 function getApiKey(): string {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
-    throw new ApiError("YOUTUBE_API_KEY is not configured", 500);
+    throw new ApiError("Service configuration error", 500);
   }
   return apiKey;
 }
@@ -24,11 +29,7 @@ async function youtubeFetch<T>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new ApiError(
-      `YouTube API request failed: ${response.status} ${errorText}`,
-      response.status
-    );
+    throw new ApiError("YouTube API request failed", response.status);
   }
 
   return response.json() as Promise<T>;
@@ -44,11 +45,11 @@ interface YouTubeVideosResponse {
   items: YouTubeVideoItem[];
 }
 
-export async function searchYouTubeMusic(
-  query = "latest hindi songs"
-): Promise<YouTubeSearchItem[]> {
+export async function searchYouTubeMusic(query: string): Promise<YouTubeSearchItem[]> {
+  const normalizedQuery = validateSearchQuery(query);
+
   const data = await youtubeFetch<YouTubeSearchResponse>(
-    `/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(query)}`,
+    `/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(normalizedQuery)}`,
     REVALIDATE.musicSearch
   );
   return data.items ?? [];
@@ -58,8 +59,11 @@ export async function fetchMusicDetail(
   id: string,
   pageToken = ""
 ): Promise<MusicDetailData> {
+  const videoId = validateYouTubeVideoId(id);
+  const token = validatePageToken(pageToken);
+
   const detailData = await youtubeFetch<YouTubeVideosResponse>(
-    `/videos?part=snippet&id=${id}`,
+    `/videos?part=snippet&id=${videoId}`,
     REVALIDATE.detail
   );
   const video = detailData.items?.[0];
@@ -75,8 +79,8 @@ export async function fetchMusicDetail(
     q: video.snippet.title,
   });
 
-  if (pageToken) {
-    searchParams.set("pageToken", pageToken);
+  if (token) {
+    searchParams.set("pageToken", token);
   }
 
   const searchData = await youtubeFetch<YouTubeSearchResponse>(
@@ -85,10 +89,10 @@ export async function fetchMusicDetail(
   );
 
   return {
-    videoId: id,
+    videoId,
     title: video.snippet.title,
     channelTitle: video.snippet.channelTitle,
-    similarSongs: (searchData.items ?? []).filter((item) => item.id.videoId !== id),
+    similarSongs: (searchData.items ?? []).filter((item) => item.id.videoId !== videoId),
     nextPageToken: searchData.nextPageToken,
     prevPageToken: searchData.prevPageToken,
   };

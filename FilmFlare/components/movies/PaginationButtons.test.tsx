@@ -9,8 +9,8 @@ describe("PaginationButtons", () => {
       <PaginationButtons page={1} param="trendingPage" onPageChange={vi.fn()} />
     );
 
-    expect(screen.getByRole("button", { name: "← Prev" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Next →" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Previous page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Next page" })).not.toBeDisabled();
   });
 
   it("calls onPageChange for next and previous", async () => {
@@ -25,10 +25,10 @@ describe("PaginationButtons", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "Next →" }));
+    await user.click(screen.getByRole("button", { name: "Next page" }));
     expect(onPageChange).toHaveBeenCalledWith("trendingPage", 3);
 
-    await user.click(screen.getByRole("button", { name: "← Prev" }));
+    await user.click(screen.getByRole("button", { name: "Previous page" }));
     expect(onPageChange).toHaveBeenCalledWith("trendingPage", 1);
   });
 
@@ -42,7 +42,20 @@ describe("PaginationButtons", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "← Prev" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Next →" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Previous page" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
+  });
+
+  it("disables next button when there is no next page", () => {
+    render(
+      <PaginationButtons
+        page={2}
+        param="trendingPage"
+        onPageChange={vi.fn()}
+        hasNextPage={false}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Next page" })).toBeDisabled();
   });
 });

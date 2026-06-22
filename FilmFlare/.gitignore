@@ -8,11 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
 .next
 *.local
 .env
+.env.*
+!.env.*.example
 tsconfig.tsbuildinfo
 
 # Test output

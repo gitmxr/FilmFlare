@@ -1,8 +1,11 @@
 {
   "name": "filmflare",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,7 +21,6 @@
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "axios": "^1.11.0",
     "framer-motion": "^12.40.0",
     "next": "^16.2.9",
     "react": "^19.1.0",

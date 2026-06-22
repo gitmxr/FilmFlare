@@ -45,8 +45,11 @@ export async function generateMetadata({
         images: posterUrl ? [{ url: posterUrl }] : [],
       },
     };
-  } catch {
-    return { title: "Movie Not Found" };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return { title: "Movie Not Found" };
+    }
+    return { title: "Movie" };
   }
 }
 

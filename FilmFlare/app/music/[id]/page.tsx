@@ -26,8 +26,11 @@ export async function generateMetadata({
         description: `Watch ${data.title} by ${data.channelTitle}`,
       },
     };
-  } catch {
-    return { title: "Music Not Found" };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return { title: "Music Not Found" };
+    }
+    return { title: "Music" };
   }
 }
 
@@ -44,7 +47,7 @@ export default async function MusicDetailPage({
 
   try {
     const data = await fetchMusicDetail(id, pageToken);
-    return <MusicDetailView data={data} videoId={id} />;
+    return <MusicDetailView data={data} videoId={data.videoId} />;
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       notFound();

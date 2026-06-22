@@ -1,3 +1,4 @@
+import { validateYouTubeEmbedId } from "@/lib/api/validation";
 import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import MusicGrid from "@/components/music/MusicGrid";
@@ -11,6 +12,18 @@ interface MusicDetailViewProps {
 export default function MusicDetailView({ data, videoId }: MusicDetailViewProps) {
   const { title, channelTitle, similarSongs, nextPageToken, prevPageToken } =
     data;
+  const embedId = validateYouTubeEmbedId(videoId);
+
+  if (!embedId) {
+    return (
+      <div className="min-h-screen bg-black p-6 text-white">
+        <p>Invalid video ID.</p>
+        <Link href="/music" className="mt-4 inline-block text-red-500">
+          Back to Music
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -36,7 +49,7 @@ export default function MusicDetailView({ data, videoId }: MusicDetailViewProps)
 
         <div className="mb-10 aspect-video w-full overflow-hidden rounded-lg shadow-lg">
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}`}
+            src={`https://www.youtube.com/embed/${embedId}`}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -48,7 +61,8 @@ export default function MusicDetailView({ data, videoId }: MusicDetailViewProps)
           <>
             <div className="mb-4 w-full text-left">
               <h2 className="border-l-4 border-red-600 pl-4 text-2xl font-bold text-white sm:text-3xl">
-                🎶 Similar Songs
+                <span aria-hidden="true">🎶 </span>
+                Similar Songs
               </h2>
             </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Providers from "@/app/providers";
+import PageTransition from "@/components/animations/PageTransition";
 import ClientWidgets from "@/components/layout/ClientWidgets";
 import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
@@ -14,7 +15,22 @@ export const metadata: Metadata = {
     default: "FilmFlare",
     template: "%s | FilmFlare",
   },
-  description: "Discover movies and music",
+  description: "Discover movies and music trailers, top-rated films, and music videos.",
+  openGraph: {
+    type: "website",
+    siteName: "FilmFlare",
+    title: "FilmFlare",
+    description: "Discover movies and music trailers, top-rated films, and music videos.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FilmFlare",
+    description: "Discover movies and music trailers, top-rated films, and music videos.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
@@ -30,10 +46,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col bg-gray-900 text-white antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-red-600 focus:px-4 focus:py-2"
+        >
+          Skip to main content
+        </a>
         <Providers>
           <ScrollToTop />
           <Header />
-          <main className="flex-grow">{children}</main>
+          <main id="main-content" className="flex-grow">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <Footer />
           <ClientWidgets />
         </Providers>

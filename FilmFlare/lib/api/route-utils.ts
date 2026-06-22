@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getErrorMessage, getErrorStatus } from "@/lib/api/errors";
+import { parsePageNumber } from "@/lib/api/validation";
 
 type RouteHandler<T> = () => Promise<T>;
 
@@ -21,6 +22,5 @@ export async function handleApiRoute<T>(
 }
 
 export function parsePageParam(searchParams: URLSearchParams, fallback = 1) {
-  const page = parseInt(searchParams.get("page") ?? String(fallback), 10);
-  return Number.isNaN(page) || page < 1 ? fallback : page;
+  return parsePageNumber(searchParams.get("page"), fallback);
 }

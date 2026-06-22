@@ -8,13 +8,14 @@ import type {
 } from "@/lib/types";
 import { REVALIDATE } from "./cache";
 import { ApiError } from "./errors";
+import { validateMovieId, validateSearchQuery } from "./validation";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
 function getApiKey(): string {
   const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) {
-    throw new ApiError("TMDB_API_KEY is not configured", 500);
+    throw new ApiError("Service configuration error", 500);
   }
   return apiKey;
 }
@@ -68,24 +69,26 @@ export async function fetchHollywoodMovies(page = 1): Promise<Movie[]> {
 }
 
 export async function searchMovies(query: string): Promise<Movie[]> {
-  if (!query.trim()) return [];
+  const normalizedQuery = validateSearchQuery(query);
 
   const data = await tmdbFetch<TMDBPaginatedResponse<Movie>>(
-    `/search/movie?query=${encodeURIComponent(query.trim())}`,
+    `/search/movie?query=${encodeURIComponent(normalizedQuery)}`,
     REVALIDATE.search
   );
   return data.results;
 }
 
 export async function fetchMovieDetail(id: string): Promise<MovieDetailData> {
+  const movieId = validateMovieId(id);
+
   const [movie, videos, similar] = await Promise.all([
-    tmdbFetch<MovieDetail>(`/movie/${id}?language=en-US`, REVALIDATE.detail),
+    tmdbFetch<MovieDetail>(`/movie/${movieId}?language=en-US`, REVALIDATE.detail),
     tmdbFetch<TMDBVideosResponse>(
-      `/movie/${id}/videos?language=en-US`,
+      `/movie/${movieId}/videos?language=en-US`,
       REVALIDATE.detail
     ),
     tmdbFetch<TMDBPaginatedResponse<Movie>>(
-      `/movie/${id}/similar?language=en-US`,
+      `/movie/${movieId}/similar?language=en-US`,
       REVALIDATE.detail
     ),
   ]);

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useTransition } from "react";
+import { useEffect, useMemo, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -35,19 +35,12 @@ export default function HomeContent({ data }: HomeContentProps) {
   const [isPending, startTransition] = useTransition();
   const shouldReduceMotion = useReducedMotion();
 
-  const sections = useMovieStore((state) => state.sections);
-  const pages = useMovieStore((state) => state.pages);
   const syncHomeData = useMovieStore((state) => state.syncHomeData);
   const setPage = useMovieStore((state) => state.setPage);
 
   const query = useSearchStore((state) => state.query);
-  const results = useSearchStore((state) => state.results);
-  const searchLoading = useSearchStore((state) => state.loading);
   const searchHistory = useSearchStore((state) => state.searchHistory);
   const setQuery = useSearchStore((state) => state.setQuery);
-  const setResults = useSearchStore((state) => state.setResults);
-  const setLoading = useSearchStore((state) => state.setLoading);
-  const setError = useSearchStore((state) => state.setError);
   const addToHistory = useSearchStore((state) => state.addToHistory);
 
   const debouncedQuery = useDebouncedValue(query, 500);
@@ -59,32 +52,27 @@ export default function HomeContent({ data }: HomeContentProps) {
   }, [data, syncHomeData]);
 
   useEffect(() => {
-    setLoading(isSearching);
-
-    if (searchResults) {
-      setResults(searchResults);
-      if (debouncedQuery.trim() && searchResults.length > 0) {
-        addToHistory(debouncedQuery);
-      }
+    if (searchResults && debouncedQuery.trim() && searchResults.length > 0) {
+      addToHistory(debouncedQuery);
     }
+  }, [searchResults, debouncedQuery, addToHistory]);
 
-    if (searchError) {
-      setError(
-        searchError instanceof Error ? searchError.message : "Search failed"
-      );
-    } else {
-      setError(null);
-    }
-  }, [
-    isSearching,
-    searchResults,
-    searchError,
-    debouncedQuery,
-    setLoading,
-    setResults,
-    setError,
-    addToHistory,
-  ]);
+  const sections = useMemo(
+    () => ({
+      trending: data.trending,
+      topRated: data.topRated,
+      bollywood: data.bollywood,
+      hollywood: data.hollywood,
+    }),
+    [data]
+  );
+
+  const pages = {
+    trendingPage: data.trendingPage,
+    topRatedPage: data.topRatedPage,
+    bollywoodPage: data.bollywoodPage,
+    hollywoodPage: data.hollywoodPage,
+  };
 
   const handlePageChange = (param: MoviePageParam, page: number) => {
     if (page < 1) return;
@@ -96,8 +84,10 @@ export default function HomeContent({ data }: HomeContentProps) {
     });
   };
 
-  const showSearchResults =
-    debouncedQuery.trim().length > 0 && results.length > 0;
+  const trimmedQuery = debouncedQuery.trim();
+  const showSearchResults = trimmedQuery.length > 0 && !isSearching && !!searchResults;
+  const searchErrorMessage =
+    searchError instanceof Error ? searchError.message : null;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -105,7 +95,7 @@ export default function HomeContent({ data }: HomeContentProps) {
         <SearchBar
           value={query}
           onChange={setQuery}
-          isSearching={searchLoading && debouncedQuery.trim().length > 0}
+          isSearching={isSearching && trimmedQuery.length > 0}
           history={searchHistory}
           onSelectHistory={setQuery}
         />
@@ -113,12 +103,22 @@ export default function HomeContent({ data }: HomeContentProps) {
 
       <div className="relative mx-auto max-w-7xl px-4 pb-20 sm:px-6">
         {isPending && (
-          <div className="absolute inset-0 z-10 flex items-start justify-center bg-black/40 pt-12">
+          <div
+            className="absolute inset-0 z-10 flex items-start justify-center bg-black/40 pt-12"
+            aria-live="polite"
+            aria-busy="true"
+          >
             <LoadingSpinner label="Loading movies..." />
           </div>
         )}
 
-        {showSearchResults && (
+        {searchErrorMessage && trimmedQuery.length > 0 && (
+          <p role="alert" className="mb-6 text-center text-red-400">
+            {searchErrorMessage}
+          </p>
+        )}
+
+        {showSearchResults && searchResults && searchResults.length > 0 && (
           <motion.section
             initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -127,18 +127,20 @@ export default function HomeContent({ data }: HomeContentProps) {
           >
             <div className="mb-4 w-full text-left">
               <div className="inline-block rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 text-2xl font-semibold text-white shadow-lg">
-                🔍 Search Results
+                <span aria-hidden="true">🔍 </span>
+                Search Results
               </div>
             </div>
-            <MovieGrid movies={results} />
+            <MovieGrid movies={searchResults} />
           </motion.section>
         )}
 
-        {debouncedQuery.trim().length > 0 &&
-          !searchLoading &&
-          results.length === 0 && (
+        {trimmedQuery.length > 0 &&
+          !isSearching &&
+          !searchErrorMessage &&
+          searchResults?.length === 0 && (
             <p className="mb-10 text-center text-gray-400">
-              No movies found for &ldquo;{debouncedQuery}&rdquo;
+              No movies found for &ldquo;{trimmedQuery}&rdquo;
             </p>
           )}
 

@@ -1,9 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-
-const devtoolsConfig = {
-  enabled: process.env.NODE_ENV === "development",
-};
+import { devtoolsConfig } from "@/lib/stores/devtools";
 
 export type ToastType = "success" | "error" | "info";
 
@@ -13,6 +10,8 @@ export interface Toast {
   type: ToastType;
 }
 
+const TOAST_DURATION_MS = 4000;
+
 interface ToastStore {
   toasts: Toast[];
   showToast: (message: string, type?: ToastType) => void;
@@ -21,15 +20,17 @@ interface ToastStore {
 
 export const useToastStore = create<ToastStore>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       toasts: [],
-      showToast: (message, type = "info") =>
+      showToast: (message, type = "info") => {
+        const id = crypto.randomUUID();
         set((state) => ({
-          toasts: [
-            ...state.toasts,
-            { id: crypto.randomUUID(), message, type },
-          ],
-        })),
+          toasts: [...state.toasts, { id, message, type }],
+        }));
+        setTimeout(() => {
+          get().dismissToast(id);
+        }, TOAST_DURATION_MS);
+      },
       dismissToast: (id) =>
         set((state) => ({
           toasts: state.toasts.filter((toast) => toast.id !== id),

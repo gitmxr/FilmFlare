@@ -74,11 +74,15 @@ export default function ContactForm() {
           type="text"
           value={name}
           onChange={(event) => setName(event.target.value)}
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? "name-error" : undefined}
           className="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white outline-none focus:border-red-500"
           placeholder="Your name"
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-400">{errors.name}</p>
+          <p id="name-error" className="mt-1 text-sm text-red-400">
+            {errors.name}
+          </p>
         )}
       </div>
 
@@ -91,11 +95,15 @@ export default function ContactForm() {
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby={errors.email ? "email-error" : undefined}
           className="w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white outline-none focus:border-red-500"
           placeholder="you@example.com"
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+          <p id="email-error" className="mt-1 text-sm text-red-400">
+            {errors.email}
+          </p>
         )}
       </div>
 
@@ -107,12 +115,16 @@ export default function ContactForm() {
           id="message"
           value={message}
           onChange={(event) => setMessage(event.target.value)}
+          aria-invalid={Boolean(errors.message)}
+          aria-describedby={errors.message ? "message-error" : undefined}
           rows={5}
           className="w-full resize-y rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white outline-none focus:border-red-500"
           placeholder="Your message..."
         />
         {errors.message && (
-          <p className="mt-1 text-sm text-red-400">{errors.message}</p>
+          <p id="message-error" className="mt-1 text-sm text-red-400">
+            {errors.message}
+          </p>
         )}
       </div>
 

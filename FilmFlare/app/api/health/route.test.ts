@@ -11,8 +11,7 @@ describe("GET /api/health", () => {
 
     expect(response.status).toBe(200);
     expect(body.status).toBe("ok");
-    expect(body.checks.tmdbApiKey).toBe(true);
-    expect(body.checks.youtubeApiKey).toBe(true);
+    expect(body.timestamp).toBeDefined();
   });
 
   it("returns degraded when API keys are missing", async () => {

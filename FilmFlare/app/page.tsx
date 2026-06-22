@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
+import HomeContent from "@/components/movies/HomeContent";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   fetchBollywoodMovies,
@@ -9,18 +9,30 @@ import {
   fetchTrendingMovies,
 } from "@/lib/api/tmdb";
 import { parseHomePages } from "@/lib/home-params";
-
-const HomeContent = dynamic(() => import("@/components/movies/HomeContent"), {
-  loading: () => <LoadingSpinner label="Loading movies..." />,
-});
+import type { Movie } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Movies",
   description: "Discover trending, top-rated, Bollywood, and Hollywood movies",
+  openGraph: {
+    title: "Movies | FilmFlare",
+    description: "Discover trending, top-rated, Bollywood, and Hollywood movies",
+  },
 };
 
 interface HomePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+async function fetchSection(
+  fetcher: (page: number) => Promise<Movie[]>,
+  page: number
+): Promise<Movie[]> {
+  try {
+    return await fetcher(page);
+  } catch {
+    return [];
+  }
 }
 
 async function HomePageData({
@@ -32,10 +44,10 @@ async function HomePageData({
   const pages = parseHomePages(params);
 
   const [trending, topRated, bollywood, hollywood] = await Promise.all([
-    fetchTrendingMovies(pages.trendingPage),
-    fetchTopRatedMovies(pages.topRatedPage),
-    fetchBollywoodMovies(pages.bollywoodPage),
-    fetchHollywoodMovies(pages.hollywoodPage),
+    fetchSection(fetchTrendingMovies, pages.trendingPage),
+    fetchSection(fetchTopRatedMovies, pages.topRatedPage),
+    fetchSection(fetchBollywoodMovies, pages.bollywoodPage),
+    fetchSection(fetchHollywoodMovies, pages.hollywoodPage),
   ]);
 
   return (

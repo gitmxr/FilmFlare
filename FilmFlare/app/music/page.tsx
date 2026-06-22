@@ -1,24 +1,32 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import MusicContent from "@/components/music/MusicContent";
 import { searchYouTubeMusic } from "@/lib/api/youtube";
-
-const MusicContent = dynamic(() => import("@/components/music/MusicContent"), {
-  loading: () => <LoadingSpinner label="Loading music..." />,
-});
+import type { YouTubeSearchItem } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Music",
   description: "Discover Indian, Pakistani, and English music videos",
+  openGraph: {
+    title: "Music | FilmFlare",
+    description: "Discover Indian, Pakistani, and English music videos",
+  },
 };
 
 export const revalidate = 1800;
 
+async function fetchSection(query: string): Promise<YouTubeSearchItem[]> {
+  try {
+    return await searchYouTubeMusic(query);
+  } catch {
+    return [];
+  }
+}
+
 export default async function MusicPage() {
   const [indian, pakistani, english] = await Promise.all([
-    searchYouTubeMusic("Latest Indian songs"),
-    searchYouTubeMusic("Pakistani songs"),
-    searchYouTubeMusic("English pop songs"),
+    fetchSection("Latest Indian songs"),
+    fetchSection("Pakistani songs"),
+    fetchSection("English pop songs"),
   ]);
 
   return (

@@ -1,4 +1,5 @@
 import type { MoviePageParam } from "@/lib/types";
+import { parsePageNumber } from "@/lib/api/validation";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -9,8 +10,7 @@ function parsePage(
 ): number {
   const value = searchParams[key];
   const raw = Array.isArray(value) ? value[0] : value;
-  const page = parseInt(raw ?? String(fallback), 10);
-  return Number.isNaN(page) || page < 1 ? fallback : page;
+  return parsePageNumber(raw, fallback);
 }
 
 export function parseHomePages(searchParams: SearchParams) {

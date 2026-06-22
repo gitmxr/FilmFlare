@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useToastStore } from "@/lib/stores/toastStore";
 
 const typeStyles = {
@@ -10,22 +9,13 @@ const typeStyles = {
 };
 
 export default function ToastContainer() {
-  const { toasts, dismissToast } = useToastStore();
-
-  useEffect(() => {
-    if (toasts.length === 0) return;
-
-    const timers = toasts.map((toast) =>
-      setTimeout(() => dismissToast(toast.id), 4000)
-    );
-
-    return () => timers.forEach(clearTimeout);
-  }, [toasts, dismissToast]);
+  const toasts = useToastStore((state) => state.toasts);
+  const dismissToast = useToastStore((state) => state.dismissToast);
 
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 flex max-w-sm flex-col gap-2 sm:bottom-6">
+    <div className="fixed bottom-24 right-4 z-50 flex max-w-sm flex-col gap-2 sm:bottom-6">
       {toasts.map((toast) => (
         <div
           key={toast.id}

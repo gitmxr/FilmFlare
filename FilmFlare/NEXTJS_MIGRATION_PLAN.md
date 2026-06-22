@@ -1,3 +1,5 @@
+> **Migration complete.** This document is archived for reference. The live app runs on Next.js 16. Legacy Vite code is on the `legacy/react-vite` branch.
+
 # 🚀 React to Next.js Migration: FilmFlare Movie Discovery App
 
 ## PROJECT OVERVIEW

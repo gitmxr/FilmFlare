@@ -3,9 +3,7 @@ import { devtools } from "zustand/middleware";
 import { fetcher } from "@/lib/api/client";
 import type { MusicSectionKey, YouTubeSearchItem } from "@/lib/types";
 
-const devtoolsConfig = {
-  enabled: process.env.NODE_ENV === "development",
-};
+import { devtoolsConfig } from "@/lib/stores/devtools";
 
 interface MusicSections {
   indian: YouTubeSearchItem[];

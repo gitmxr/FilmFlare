@@ -36,8 +36,8 @@ describe("SearchBar", () => {
     expect(onSelectHistory).toHaveBeenCalledWith("batman");
   });
 
-  it("shows loading state on search button", () => {
+  it("shows loading state while searching", () => {
     render(<SearchBar value="batman" onChange={vi.fn()} isSearching />);
-    expect(screen.getByText("...")).toBeInTheDocument();
+    expect(screen.getByText("Searching…")).toBeInTheDocument();
   });
 });

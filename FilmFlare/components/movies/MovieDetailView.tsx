@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import MovieGrid from "@/components/movies/MovieGrid";
+import { validateYouTubeEmbedId } from "@/lib/api/validation";
 import type { MovieDetailData } from "@/lib/types";
 import { POSTER_BASE_URL } from "@/lib/types";
 
@@ -14,6 +15,7 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
   const posterUrl = movie.poster_path
     ? `${POSTER_BASE_URL}${movie.poster_path}`
     : null;
+  const trailerKey = trailer ? validateYouTubeEmbedId(trailer.key) : null;
 
   return (
     <div className="min-h-screen bg-black p-4 text-white sm:p-6">
@@ -68,20 +70,20 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
               Genres: {movie.genres?.map((genre) => genre.name).join(", ")}
             </p>
             <p className="mt-1 text-sm text-gray-300">
-              Runtime: {movie.runtime} min
+              Runtime: {movie.runtime ? `${movie.runtime} min` : "N/A"}
             </p>
             <p className="mt-4 text-sm text-gray-200 sm:text-base">
               {movie.overview}
             </p>
 
-            {trailer ? (
+            {trailerKey ? (
               <div className="mt-6">
                 <h2 className="mb-2 text-lg font-semibold sm:text-xl">
                   Watch Trailer
                 </h2>
                 <div className="aspect-video w-full overflow-hidden rounded-lg">
                   <iframe
-                    src={`https://www.youtube.com/embed/${trailer.key}`}
+                    src={`https://www.youtube.com/embed/${trailerKey}`}
                     title={`${movie.title} trailer`}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

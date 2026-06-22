@@ -1,6 +1,7 @@
 import { CACHE_HEADERS } from "@/lib/api/cache";
 import { ApiError } from "@/lib/api/errors";
 import { handleApiRoute } from "@/lib/api/route-utils";
+import { validateSearchQuery } from "@/lib/api/validation";
 import { searchMovies } from "@/lib/api/tmdb";
 
 export async function GET(request: Request) {
@@ -8,9 +9,7 @@ export async function GET(request: Request) {
   const query = searchParams.get("q") ?? searchParams.get("query") ?? "";
 
   return handleApiRoute(async () => {
-    if (!query.trim()) {
-      throw new ApiError("Search query is required", 400);
-    }
-    return searchMovies(query);
+    const normalizedQuery = validateSearchQuery(query);
+    return searchMovies(normalizedQuery);
   }, CACHE_HEADERS.search);
 }
