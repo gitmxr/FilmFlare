@@ -95,7 +95,7 @@ In Vercel → Project → Settings → Environment Variables, add:
 `vercel.json` runs quality checks before each deploy:
 
 ```bash
-npm run type-check && npm run test && npm run build
+npm run type-check && npm run lint && npm run test && npm run build
 ```
 
 ### 4. Deploy

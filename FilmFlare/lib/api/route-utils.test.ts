@@ -25,6 +25,11 @@ describe("parsePageParam", () => {
     const params = new URLSearchParams("page=abc");
     expect(parsePageParam(params, 1)).toBe(1);
   });
+
+  it("caps page numbers at the maximum", () => {
+    const params = new URLSearchParams("page=9999");
+    expect(parsePageParam(params)).toBe(500);
+  });
 });
 
 describe("handleApiRoute", () => {

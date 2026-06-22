@@ -55,14 +55,16 @@ export async function generateMetadata({
 
 export default async function MovieDetailPage({ params }: MovieDetailPageProps) {
   const { id } = await params;
+  let data;
 
   try {
-    const data = await fetchMovieDetail(id);
-    return <MovieDetailView data={data} />;
+    data = await fetchMovieDetail(id);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       notFound();
     }
     throw error;
   }
+
+  return <MovieDetailView data={data} />;
 }

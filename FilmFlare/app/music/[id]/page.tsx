@@ -45,13 +45,16 @@ export default async function MusicDetailPage({
     ? pageTokenRaw[0] ?? ""
     : pageTokenRaw ?? "";
 
+  let data;
+
   try {
-    const data = await fetchMusicDetail(id, pageToken);
-    return <MusicDetailView data={data} videoId={data.videoId} />;
+    data = await fetchMusicDetail(id, pageToken);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       notFound();
     }
     throw error;
   }
+
+  return <MusicDetailView data={data} videoId={data.videoId} />;
 }

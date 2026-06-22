@@ -46,6 +46,21 @@ const nextConfig: NextConfig = {
             key: "X-DNS-Prefetch-Control",
             value: "on",
           },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://image.tmdb.org https://i.ytimg.com",
+              "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+              "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+              "font-src 'self'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' mailto:",
+            ].join("; "),
+          },
         ],
       },
       {
