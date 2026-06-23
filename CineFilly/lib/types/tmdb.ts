@@ -14,6 +14,7 @@ export interface Movie {
   vote_count: number;
   genre_ids?: number[];
   popularity?: number;
+  media_type?: "movie";
 }
 
 export interface MovieDetail extends Movie {
@@ -21,6 +22,79 @@ export interface MovieDetail extends Movie {
   genres: Genre[];
   status?: string;
   tagline?: string;
+}
+
+export interface TVShow {
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  first_air_date: string;
+  vote_average: number;
+  vote_count: number;
+  genre_ids?: number[];
+  popularity?: number;
+  media_type?: "tv";
+}
+
+export interface TVDetail extends TVShow {
+  genres: Genre[];
+  number_of_seasons: number;
+  number_of_episodes: number;
+  status: string;
+  tagline: string;
+  episode_run_time: number[];
+}
+
+export interface Person {
+  id: number;
+  name: string;
+  profile_path: string | null;
+  known_for_department?: string;
+  media_type?: "person";
+}
+
+export interface PersonDetail extends Person {
+  biography: string;
+  birthday: string | null;
+  place_of_birth: string | null;
+  also_known_as: string[];
+}
+
+export interface PersonCreditItem {
+  id: number;
+  title?: string;
+  name?: string;
+  media_type: "movie" | "tv";
+  poster_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average: number;
+  character?: string;
+  job?: string;
+}
+
+export interface CastMember {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+}
+
+export interface CrewMember {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+}
+
+export interface Credits {
+  id: number;
+  cast: CastMember[];
+  crew: CrewMember[];
 }
 
 export interface Video {
@@ -43,9 +117,49 @@ export interface TMDBVideosResponse {
   results: Video[];
 }
 
-export const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500";
+export interface TMDBGenreListResponse {
+  genres: Genre[];
+}
 
-export type MovieSectionKey = "trending" | "topRated" | "bollywood" | "hollywood";
+export type MediaType = "movie" | "tv";
+
+export type TrendingMediaItem = (Movie | TVShow) & {
+  media_type: "movie" | "tv";
+};
+
+export type MultiSearchResult =
+  | (Movie & { media_type: "movie" })
+  | (TVShow & { media_type: "tv" })
+  | (Person & { media_type: "person" });
+
+export type DiscoverSortKey =
+  | "popularity.desc"
+  | "popularity.asc"
+  | "vote_average.desc"
+  | "vote_average.asc"
+  | "release_date.desc"
+  | "release_date.asc";
+
+export interface DiscoverParams {
+  page?: number;
+  genreId?: number | null;
+  sortBy?: DiscoverSortKey;
+  industryId?: string | null;
+}
+
+export interface HomeHubData {
+  nowPlaying: Movie[];
+  heroFeatured: Movie | null;
+  trendingAll: TrendingMediaItem[];
+  popularMovies: Movie[];
+  popularTV: TVShow[];
+  topRatedMovies: Movie[];
+  topRatedTV: TVShow[];
+}
+
+export const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500";
+export const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/w1280";
+export const PROFILE_BASE_URL = "https://image.tmdb.org/t/p/w185";
 
 export type MoviePageParam =
   | "trendingPage"
@@ -53,19 +167,33 @@ export type MoviePageParam =
   | "bollywoodPage"
   | "hollywoodPage";
 
-export interface HomeLoaderData {
-  trending: Movie[];
-  topRated: Movie[];
-  bollywood: Movie[];
-  hollywood: Movie[];
-  trendingPage: number;
-  topRatedPage: number;
-  bollywoodPage: number;
-  hollywoodPage: number;
-}
-
 export interface MovieDetailData {
   movie: MovieDetail;
   trailer: Video | null;
   similarMovies: Movie[];
+  cast: CastMember[];
+  director: CrewMember | null;
+  writer: CrewMember | null;
+}
+
+export interface TVDetailData {
+  show: TVDetail;
+  trailer: Video | null;
+  similarShows: TVShow[];
+  cast: CastMember[];
+  director: CrewMember | null;
+  writer: CrewMember | null;
+}
+
+export interface PersonDetailData {
+  person: PersonDetail;
+  movieCredits: PersonCreditItem[];
+  tvCredits: PersonCreditItem[];
+}
+
+export interface DiscoverResponse {
+  page: number;
+  results: (Movie | TVShow)[];
+  total_pages: number;
+  total_results: number;
 }

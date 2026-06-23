@@ -29,6 +29,9 @@ describe("GET /api/movies/[id]", () => {
       },
       trailer: null,
       similarMovies: [],
+      cast: [],
+      director: null,
+      writer: null,
     });
 
     const response = await GET(new Request("http://localhost/api/movies/550"), {

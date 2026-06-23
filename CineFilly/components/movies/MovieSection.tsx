@@ -1,4 +1,5 @@
 import type { Movie, MoviePageParam } from "@/lib/types";
+import { CARD_SECTION_TITLE_CLASS } from "@/lib/card-layout";
 import MovieGrid from "./MovieGrid";
 import PaginationButtons from "./PaginationButtons";
 
@@ -20,11 +21,9 @@ export default function MovieSection({
   isPending = false,
 }: MovieSectionProps) {
   return (
-    <section className="mt-8">
+    <section className="mt-8 sm:mt-10">
       <div className="mb-4 w-full text-left">
-        <h2 className="border-l-4 border-red-600 pl-4 text-2xl font-bold text-white sm:text-3xl">
-          {title}
-        </h2>
+        <h2 className={CARD_SECTION_TITLE_CLASS}>{title}</h2>
       </div>
       <MovieGrid movies={movies} />
       <PaginationButtons

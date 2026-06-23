@@ -1,33 +1,32 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import HomeContent from "@/components/movies/HomeContent";
+import HomeHubContent from "@/components/home/HomeHubContent";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
-  fetchBollywoodMovies,
-  fetchHollywoodMovies,
+  fetchNowPlayingMovies,
   fetchTopRatedMovies,
+  fetchTopRatedTV,
+  fetchTrendingAll,
   fetchTrendingMovies,
+  fetchTrendingTV,
 } from "@/lib/api/tmdb";
-import { parseHomePages } from "@/lib/home-params";
-import type { Movie } from "@/lib/types";
+import type { TrendingMediaItem } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Movies",
-  description: "Discover trending, top-rated, Bollywood, and Hollywood movies",
+  title: "Home",
+  description:
+    "Discover trending movies, TV shows, web series, music, and people — all in one place on CineFilly",
   openGraph: {
-    title: "Movies | CineFilly",
-    description: "Discover trending, top-rated, Bollywood, and Hollywood movies",
+    title: "CineFilly — Movies, TV & More",
+    description:
+      "Discover trending movies, TV shows, web series, music, and people in one place",
   },
 };
 
-interface HomePageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
-async function fetchSection(
-  fetcher: (page: number) => Promise<Movie[]>,
-  page: number
-): Promise<Movie[]> {
+async function fetchSection<T>(
+  fetcher: (page: number) => Promise<T[]>,
+  page = 1
+): Promise<T[]> {
   try {
     return await fetcher(page);
   } catch {
@@ -35,38 +34,50 @@ async function fetchSection(
   }
 }
 
-async function HomePageData({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const params = await searchParams;
-  const pages = parseHomePages(params);
+async function fetchTrendingAllSafe(): Promise<TrendingMediaItem[]> {
+  try {
+    return await fetchTrendingAll("day", 1);
+  } catch {
+    return [];
+  }
+}
 
-  const [trending, topRated, bollywood, hollywood] = await Promise.all([
-    fetchSection(fetchTrendingMovies, pages.trendingPage),
-    fetchSection(fetchTopRatedMovies, pages.topRatedPage),
-    fetchSection(fetchBollywoodMovies, pages.bollywoodPage),
-    fetchSection(fetchHollywoodMovies, pages.hollywoodPage),
-  ]);
+async function HomePageData() {
+  const [popularMovies, popularTV, topRatedMovies, topRatedTV, nowPlaying, trendingAll] =
+    await Promise.all([
+      fetchSection(fetchTrendingMovies, 1),
+      fetchSection(fetchTrendingTV, 1),
+      fetchSection(fetchTopRatedMovies, 1),
+      fetchSection(fetchTopRatedTV, 1),
+      fetchSection(fetchNowPlayingMovies, 1),
+      fetchTrendingAllSafe(),
+    ]);
+
+  const heroIndex =
+    nowPlaying.length > 0
+      ? new Date().getUTCDate() % Math.min(nowPlaying.length, 20)
+      : 0;
+  const heroFeatured = nowPlaying.length > 0 ? nowPlaying[heroIndex] : null;
 
   return (
-    <HomeContent
+    <HomeHubContent
       data={{
-        trending,
-        topRated,
-        bollywood,
-        hollywood,
-        ...pages,
+        nowPlaying,
+        heroFeatured,
+        trendingAll,
+        popularMovies,
+        popularTV,
+        topRatedMovies,
+        topRatedTV,
       }}
     />
   );
 }
 
-export default function HomePage({ searchParams }: HomePageProps) {
+export default function HomePage() {
   return (
-    <Suspense fallback={<LoadingSpinner label="Loading movies..." />}>
-      <HomePageData searchParams={searchParams} />
+    <Suspense fallback={<LoadingSpinner label="Loading..." />}>
+      <HomePageData />
     </Suspense>
   );
 }

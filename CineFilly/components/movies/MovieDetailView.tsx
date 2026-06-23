@@ -1,29 +1,50 @@
 import Image from "next/image";
 import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
-import MovieGrid from "@/components/movies/MovieGrid";
+import CastGrid from "@/components/media/CastGrid";
+import MediaCarouselSection from "@/components/media/MediaCarouselSection";
+import VideoPlayer from "@/components/ui/VideoPlayer";
+import StarRating from "@/components/ui/StarRating";
 import { validateYouTubeEmbedId } from "@/lib/api/validation";
 import type { MovieDetailData } from "@/lib/types";
-import { POSTER_BASE_URL } from "@/lib/types";
+import { BACKDROP_BASE_URL, POSTER_BASE_URL } from "@/lib/types";
 
 interface MovieDetailViewProps {
   data: MovieDetailData;
 }
 
 export default function MovieDetailView({ data }: MovieDetailViewProps) {
-  const { movie, trailer, similarMovies } = data;
+  const { movie, trailer, similarMovies, cast, director, writer } = data;
   const posterUrl = movie.poster_path
     ? `${POSTER_BASE_URL}${movie.poster_path}`
+    : null;
+  const backdropUrl = movie.backdrop_path
+    ? `${BACKDROP_BASE_URL}${movie.backdrop_path}`
     : null;
   const trailerKey = trailer ? validateYouTubeEmbedId(trailer.key) : null;
 
   return (
-    <div className="min-h-screen bg-black p-4 text-white sm:p-6">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen bg-black text-white">
+      {backdropUrl && (
+        <div className="relative h-48 w-full sm:h-64 md:h-80">
+          <Image
+            src={backdropUrl}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            aria-hidden
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+        </div>
+      )}
+
+      <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Movies", href: "/" },
+            { label: "Movies", href: "/movies" },
             { label: movie.title },
           ]}
         />
@@ -34,7 +55,7 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
           ← Back to Home
         </Link>
 
-        <div className="flex flex-col gap-6 sm:gap-8 md:flex-row">
+        <div className="-mt-10 flex flex-col gap-6 sm:-mt-16 sm:gap-8 md:flex-row">
           <div className="w-full md:w-1/3">
             <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg shadow-lg">
               {posterUrl ? (
@@ -55,23 +76,50 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
           </div>
 
           <div className="flex-1">
-            <h1 className="mb-4 text-2xl font-bold text-yellow-400 sm:text-3xl">
+            <h1 className="text-2xl font-bold text-yellow-400 sm:text-3xl">
               {movie.title}
             </h1>
-            <p className="mb-2 text-sm text-gray-300 sm:text-base">
+
+            {movie.tagline && (
+              <p className="mt-2 text-sm italic text-gray-400">{movie.tagline}</p>
+            )}
+
+            <p className="mb-2 mt-4 text-sm text-gray-300 sm:text-base">
               <span className="font-semibold">Release Date:</span>{" "}
               {movie.release_date}
             </p>
-            <p className="mb-2 text-sm text-gray-300 sm:text-base">
-              <span className="font-semibold">Rating:</span> ⭐{" "}
-              {movie.vote_average.toFixed(1)} / 10 ({movie.vote_count} votes)
+            <p className="mb-2 flex flex-wrap items-center gap-2 text-sm text-gray-300 sm:text-base">
+              <span className="font-semibold">Rating:</span>
+              <StarRating rating={movie.vote_average} size="md" />
+              <span className="text-gray-400">({movie.vote_count} votes)</span>
             </p>
+            {movie.status && (
+              <p className="text-sm text-gray-300">
+                <span className="font-semibold">Status:</span> {movie.status}
+              </p>
+            )}
             <p className="mt-2 text-sm text-gray-300">
               Genres: {movie.genres?.map((genre) => genre.name).join(", ")}
             </p>
             <p className="mt-1 text-sm text-gray-300">
               Runtime: {movie.runtime ? `${movie.runtime} min` : "N/A"}
             </p>
+            {director && (
+              <p className="mt-2 text-sm text-gray-300">
+                <span className="font-semibold">Director:</span>{" "}
+                <Link href={`/person/${director.id}`} className="text-red-400 hover:underline">
+                  {director.name}
+                </Link>
+              </p>
+            )}
+            {writer && (
+              <p className="mt-1 text-sm text-gray-300">
+                <span className="font-semibold">Writer:</span>{" "}
+                <Link href={`/person/${writer.id}`} className="text-red-400 hover:underline">
+                  {writer.name}
+                </Link>
+              </p>
+            )}
             <p className="mt-4 text-sm text-gray-200 sm:text-base">
               {movie.overview}
             </p>
@@ -81,15 +129,11 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
                 <h2 className="mb-2 text-lg font-semibold sm:text-xl">
                   Watch Trailer
                 </h2>
-                <div className="aspect-video w-full overflow-hidden rounded-lg">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${trailerKey}`}
-                    title={`${movie.title} trailer`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="h-full w-full border-0"
-                  />
-                </div>
+                <VideoPlayer
+                  videoId={trailerKey}
+                  title={movie.title}
+                  storageKey={`movie-${movie.id}-${trailerKey}`}
+                />
               </div>
             ) : (
               <p className="mt-6 text-gray-400">Trailer not available.</p>
@@ -97,13 +141,16 @@ export default function MovieDetailView({ data }: MovieDetailViewProps) {
           </div>
         </div>
 
+        <CastGrid cast={cast} />
+
         {similarMovies.length > 0 && (
-          <section className="mt-10">
-            <h2 className="mb-4 border-l-4 border-red-600 pl-4 text-2xl font-bold text-white sm:text-3xl">
-              Similar Movies
-            </h2>
-            <MovieGrid movies={similarMovies} />
-          </section>
+          <div className="mt-10">
+            <MediaCarouselSection
+              title="Similar Movies"
+              items={similarMovies}
+              mediaType="movie"
+            />
+          </div>
         )}
       </div>
     </div>
