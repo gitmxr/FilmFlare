@@ -1,11 +1,11 @@
-# 🎬 CineFilly — Movie & Music Discovery
+# 🎬 CineFilly — Movies, TV & Music Discovery
 
 <p align="center">
   <img src="public/images/cinefilly_logo.webp" alt="CineFilly Logo" width="120" />
 </p>
 
 <p align="center">
-  <strong>A modern full-stack web app for discovering movies, trailers, and music videos</strong>
+  <strong>A modern full-stack web app for discovering movies, TV shows, web series, cast profiles, and music videos</strong>
 </p>
 
 <p align="center">
@@ -27,20 +27,39 @@
 
 ## ✨ Features
 
-- 🎥 **Movie Discovery** — Browse trending, top-rated, Bollywood, and Hollywood movies
-- 🔍 **Smart Search** — Debounced movie search with persistent search history
-- 📄 **Movie Details** — Posters, ratings, runtime, overview, and YouTube trailers
-- 🎶 **Music Discovery** — Indian, Pakistani, and English music video sections
-- 🎧 **Music Search** — Search YouTube music videos with inline playback
-- 📺 **Embedded Players** — Watch trailers and music videos without leaving the app
-- 📱 **Responsive Design** — Optimized for mobile, tablet, and desktop
-- ⚡ **Server-Side APIs** — TMDB and YouTube keys stay secure on the server
-- 🔄 **ISR & Caching** — Fast pages with incremental static regeneration
-- 🎨 **Smooth Animations** — Page transitions and card animations via Framer Motion
-- ♿ **Accessible UI** — Skip links, ARIA labels, and reduced-motion support
-- 🔒 **Security Hardened** — CSP headers, rate limiting, and input validation
+- 🏠 **Home Hub** — Trending movies, TV shows, top-rated highlights, and quick browse categories in one place
+- 🎥 **Movie Browse** — Filter by genre, sort, and industry (Hollywood, Bollywood, Lollywood, and more)
+- 📺 **TV & Web Series** — Dedicated browse page with genre, region, and rating filters
+- 🔍 **Multi-Search** — Search movies, TV shows, and people with debounced preview on the home page
+- 📄 **Rich Detail Pages** — Movies, TV shows, cast profiles, and music videos with trailers and similar titles
+- 🎶 **Music Discovery** — Indian, Pakistani, and English music video sections with inline playback
+- 📱 **Responsive Design** — Mobile-first layout with custom filter bottom sheets on small screens
+- ⚡ **Server Components & ISR** — Server-rendered pages with tuned revalidation and fetch caching
+- 🔎 **SEO Optimized** — Metadata API, Open Graph, Twitter cards, JSON-LD, sitemap, and robots.txt
+- ♿ **Accessible UI** — Skip links, semantic HTML, ARIA labels, and reduced-motion support
+- 🔒 **Security Hardened** — CSP headers, API rate limiting, and input validation
 - 📊 **Analytics Ready** — Vercel Analytics and Speed Insights integration
-- 🧪 **Tested CI Pipeline** — Type-check, lint, 52+ tests, and build on every deploy
+- 🧪 **Tested CI Pipeline** — Type-check, lint, 45+ tests, and build on every deploy
+
+---
+
+## 🗺️ Routes
+
+| Route | Description |
+| --- | --- |
+| `/` | Home hub — trending, popular, top-rated, search preview |
+| `/movies` | Movie browse with genre, industry, and sort filters |
+| `/tv` | TV & web series browse with genre, region, and sort filters |
+| `/movie/[id]` | Movie detail — cast, trailer, similar films |
+| `/tv/[id]` | TV show detail — cast, trailer, similar series |
+| `/person/[id]` | Cast & crew profile with filmography |
+| `/music` | Music video sections (Indian, Pakistani, English) |
+| `/music/[id]` | Music video detail with similar songs |
+| `/search/[query]` | Multi-type search results (noindex) |
+| `/about` | About page |
+| `/contact` | Contact form and social links |
+
+> Legacy `/explore/movie` and `/explore/tv` URLs redirect to `/movies` and `/tv`.
 
 ---
 
@@ -48,13 +67,13 @@
 
 > Add your screenshots to the `screenshots/` folder (e.g. `ss1.png`, `ss2.png`) and they will render below.
 
-| **Home — Trending Movies** | **Movie Search** | **Movie Detail & Trailer** | **Music Page** |
+| **Home** | **Movies Browse** | **TV Browse** | **Movie Detail** |
 | :---: | :---: | :---: | :---: |
-| ![Home](screenshots/ss1.png) | ![Search](screenshots/ss2.png) | ![Movie Detail](screenshots/ss3.png) | ![Music](screenshots/ss4.png) |
+| ![Home](screenshots/ss1.png) | ![Movies](screenshots/ss2.png) | ![TV](screenshots/ss3.png) | ![Movie Detail](screenshots/ss4.png) |
 
-| **Music Search** | **Music Detail** | **About Page** | **Contact Page** |
+| **Music** | **Search** | **About** | **Contact** |
 | :---: | :---: | :---: | :---: |
-| ![Music Search](screenshots/ss5.png) | ![Music Detail](screenshots/ss6.png) | ![About](screenshots/ss7.png) | ![Contact](screenshots/ss8.png) |
+| ![Music](screenshots/ss5.png) | ![Search](screenshots/ss6.png) | ![About](screenshots/ss7.png) | ![Contact](screenshots/ss8.png) |
 
 ---
 
@@ -62,16 +81,16 @@
 
 | Technology | Purpose |
 | --- | --- |
-| **Next.js 16** | React framework with App Router, SSR, SSG, and API routes |
-| **React 19** | UI library with latest concurrent features |
-| **TypeScript** | Type-safe development across the entire codebase |
+| **Next.js 16** | App Router, SSR, SSG, ISR, and API routes |
+| **React 19** | UI with Server and Client Components |
+| **TypeScript** | Type-safe development across the codebase |
 | **Tailwind CSS v4** | Utility-first styling and responsive layouts |
-| **Zustand** | Lightweight client state (search, music, toasts) |
-| **SWR** | Client-side data fetching and caching for movie search |
-| **Framer Motion** | Page transitions and scroll-driven card animations |
+| **Zustand** | Client state (search history, music, toasts) |
+| **SWR** | Client-side data fetching where interactivity is needed |
+| **Framer Motion** | Card animations and motion effects |
 | **Vitest** | Unit and integration testing |
 | **Testing Library** | Component testing with user-event simulation |
-| **TMDB API** | Movie data, posters, trailers, and similar films |
+| **TMDB API** | Movies, TV, cast, posters, and trailers |
 | **YouTube Data API** | Music video search, details, and embeds |
 | **Vercel** | Production hosting, previews, and analytics |
 
@@ -82,54 +101,61 @@
 ```
 CineFilly/
 ├── app/                          # Next.js App Router
-│   ├── page.tsx                    # Home (movies + search + pagination)
-│   ├── movie/[id]/               # Movie detail (ISR + metadata)
+│   ├── page.tsx                  # Home hub (movies + TV + search preview)
+│   ├── movies/                   # Movie browse (genre, industry, sort)
+│   ├── tv/                       # TV & web series browse
+│   ├── movie/[id]/               # Movie detail (ISR + JSON-LD)
+│   ├── tv/[id]/                  # TV detail (ISR + JSON-LD)
+│   ├── person/[id]/              # Cast & crew profiles
 │   ├── music/                    # Music listing & detail pages
-│   ├── about/                    # Static about page
-│   ├── contact/                  # Contact form page
-│   ├── api/                      # Server-side API routes
-│   │   ├── movies/               # TMDB proxy (trending, search, detail…)
-│   │   ├── music/                # YouTube proxy (search, detail)
-│   │   └── health/               # Deployment health check
+│   ├── search/[query]/           # Multi-type search results
+│   ├── explore/[mediaType]/      # Legacy redirects → /movies or /tv
+│   ├── about/ & contact/         # Static pages
+│   ├── api/                      # Server-side API routes (TMDB, YouTube)
 │   ├── layout.tsx                # Root layout, metadata, providers
-│   ├── sitemap.ts                # SEO sitemap generation
+│   ├── sitemap.ts                # Dynamic sitemap (static + trending URLs)
 │   └── robots.ts                 # Crawler rules
 ├── components/
-│   ├── movies/                   # MovieCard, HomeContent, SearchBar…
+│   ├── home/                     # HomeHubContent, PopularSection, BrowseCategories
+│   ├── movies/                   # MoviesBrowseContent, MovieDetailView, HeroBanner
+│   ├── tv/                       # TVDetailView
+│   ├── explore/                  # ExploreContent (TV browse filters)
+│   ├── media/                    # MediaCard, CastGrid, carousels
 │   ├── music/                    # MusicCard, MusicContent, MusicDetailView
-│   ├── ui/                       # Header, Footer, Toast, LoadingSpinner
-│   ├── contact/                  # ContactForm with validation
-│   ├── animations/               # PageTransition
+│   ├── search/                   # SearchResultsContent (server component)
+│   ├── seo/                      # JsonLd structured data
+│   ├── ui/                       # Header, Footer, FilterSelect, skeletons
 │   └── analytics/                # Web Vitals, Vercel Analytics
 ├── lib/
-│   ├── api/                      # TMDB, YouTube, validation, rate-limit
-│   ├── stores/                   # Zustand stores (movie, search, music, toast)
-│   ├── hooks/                    # useSearch, useDebouncedValue
+│   ├── api/                      # TMDB, YouTube, validation, rate-limit, cache
+│   ├── seo/                      # buildPageMetadata, canonical URLs
+│   ├── stores/                   # Zustand stores (search, music, toast)
+│   ├── hooks/                    # useDebouncedValue, useMultiSearch
 │   └── types/                    # Shared TypeScript interfaces
 ├── tests/                        # Vitest setup and mocks
-├── middleware.ts                 # API rate limiting (60 req/min)
+├── proxy.ts                      # API rate limiting (60 req/min)
 ├── next.config.ts                # Images, security headers, CSP
 └── vercel.json                   # CI build pipeline config
 ```
 
 ### Data flow
 
-1. **Server pages** fetch movie/music data via `lib/api/tmdb.ts` and `lib/api/youtube.ts`
-2. **Client components** handle search, pagination, and interactivity
+1. **Server pages** fetch browse and detail data via `lib/api/tmdb.ts` and `lib/api/youtube.ts` with ISR revalidation
+2. **Client components** handle filters, pagination, search preview, and playback
 3. **API routes** proxy external APIs so keys never reach the browser
-4. **Middleware** rate-limits `/api/*` to protect quota and prevent abuse
+4. **Proxy** rate-limits `/api/*` to protect quota and prevent abuse
 
 ---
 
 ## 🎨 Design Highlights
 
 - **Cinematic Dark Theme** — Black/gray backgrounds with red and yellow accents
-- **Gradient Search Headers** — Distinct blue and purple gradients for search results
-- **Animated Cards** — Subtle hover and scroll-reveal effects (respects `prefers-reduced-motion`)
-- **Optimized Images** — Next.js Image with AVIF/WebP and TMDB CDN patterns
-- **Toast Notifications** — Non-blocking feedback on contact form actions
+- **Skeleton Loaders** — Route-level and in-component loading states (no full-page spinners)
+- **Custom Filter UI** — Desktop dropdowns and mobile bottom-sheet selects
+- **Animated Cards** — Subtle hover and scroll effects (respects `prefers-reduced-motion`)
+- **Optimized Images** — `next/image` with AVIF/WebP and TMDB CDN patterns
 - **Breadcrumb Navigation** — Clear hierarchy on detail pages
-- **Sticky Header** — Always-accessible navigation across routes
+- **Sticky Header** — Active nav state across browse and detail routes
 
 ---
 
@@ -148,7 +174,7 @@ CineFilly/
 
 ```bash
 git clone https://github.com/gitmxr/CineFilly.git
-cd CineFilly
+cd CineFilly/CineFilly
 ```
 
 2. **Install dependencies**
@@ -190,7 +216,7 @@ Open [http://localhost:3000](http://localhost:3000)
 | `npm run start` | Run production server locally |
 | `npm run type-check` | TypeScript validation (`tsc --noEmit`) |
 | `npm run lint` | ESLint (Next.js core-web-vitals + TypeScript) |
-| `npm run test` | Run Vitest test suite (52 tests) |
+| `npm run test` | Run Vitest test suite |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:coverage` | Tests with V8 coverage report |
 | `npm run analyze` | Bundle analysis build (`ANALYZE=true`) |
@@ -204,6 +230,7 @@ Open [http://localhost:3000](http://localhost:3000)
 1. Push to GitHub
 2. Import the repo at [vercel.com/new](https://vercel.com/new)
 3. Framework preset: **Next.js** (auto-detected)
+4. Set root directory to `CineFilly` if the app lives in a nested folder
 
 ### 2. Environment variables
 
@@ -211,7 +238,7 @@ Open [http://localhost:3000](http://localhost:3000)
 | --- | --- |
 | `TMDB_API_KEY` | Production, Preview, Development |
 | `YOUTUBE_API_KEY` | Production, Preview, Development |
-| `NEXT_PUBLIC_SITE_URL` | Production (your domain) |
+| `NEXT_PUBLIC_SITE_URL` | Production (your domain, e.g. `https://cine-filly.vercel.app`) |
 
 ### 3. Build command
 
@@ -223,11 +250,13 @@ npm run type-check && npm run lint && npm run test && npm run build
 
 ### 4. Post-deploy checklist
 
-- [ ] Home page loads with all four movie sections
-- [ ] Movie search returns results
-- [ ] Movie detail pages show trailers
+- [ ] Home page loads with trending movies and TV sections
+- [ ] `/movies` browse and industry filters work
+- [ ] `/tv` browse and region filters work
+- [ ] Movie and TV detail pages show trailers
 - [ ] Music page and search work
 - [ ] `/api/health` returns `{ "status": "ok" }`
+- [ ] `/sitemap.xml` and `/robots.txt` are reachable
 
 ### Health endpoint
 
@@ -246,10 +275,21 @@ GET /api/health
 
 - API keys are **server-only** (never `NEXT_PUBLIC_`)
 - **Content-Security-Policy** and security headers in `next.config.ts`
-- **Rate limiting** on API routes (60 requests/minute per IP)
-- **Input validation** for movie IDs, video IDs, search queries, and pagination
+- **Rate limiting** on API routes (60 requests/minute per IP via `proxy.ts`)
+- **Input validation** for media IDs, video IDs, search queries, and pagination
 - Sanitized error responses (no upstream API leaks)
 - `.env` files are gitignored — never commit secrets
+
+---
+
+## 🔎 SEO
+
+- Centralized metadata via `lib/seo/metadata.ts` (`buildPageMetadata`)
+- Per-route static and dynamic metadata (`generateMetadata` on detail and browse pages)
+- Open Graph and Twitter card images (posters/thumbnails where available)
+- JSON-LD on movie, TV, person, and music detail pages
+- Dynamic `sitemap.xml` with static routes and trending movie/TV URLs
+- `robots.txt` disallows `/api/` and `/search/` to avoid thin duplicate content
 
 ---
 
@@ -266,7 +306,7 @@ npm run test:watch
 npm run test:coverage
 ```
 
-Tests cover API routes, validation, rate limiting, Zustand stores, utilities, and core UI components.
+Tests cover API routes, discover validation, rate limiting, Zustand stores, utilities, and core UI components.
 
 ---
 
