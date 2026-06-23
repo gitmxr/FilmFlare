@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "About",
   description:
-    "Learn about CineFilly — your platform for discovering movies, trailers, and music.",
-};
+    "Learn about CineFilly — your platform for discovering movies, TV shows, web series, trailers, and music.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

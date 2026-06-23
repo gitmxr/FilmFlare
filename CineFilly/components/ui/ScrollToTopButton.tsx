@@ -39,7 +39,7 @@ export default function ScrollToTopButton() {
     <button
       type="button"
       onClick={scrollToTop}
-      className="fixed bottom-6 right-6 z-40 rounded-full bg-red-600 p-3 text-white shadow-lg transition duration-200 hover:bg-red-700"
+      className="fixed bottom-20 right-4 z-40 rounded-full bg-red-600 p-3 text-white shadow-lg transition duration-200 hover:bg-red-700 sm:bottom-6 sm:right-6"
       aria-label="Scroll to top"
     >
       <FaArrowUp />

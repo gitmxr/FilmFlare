@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import type { Person } from "@/lib/types";
@@ -26,6 +24,7 @@ export default function PersonCard({ person }: PersonCardProps) {
             alt={person.name}
             fill
             sizes="112px"
+            loading="lazy"
             className="object-cover"
           />
         ) : (
@@ -34,7 +33,7 @@ export default function PersonCard({ person }: PersonCardProps) {
           </div>
         )}
       </div>
-      <h2 className="text-base font-semibold text-white">{person.name}</h2>
+      <p className="text-base font-semibold text-white">{person.name}</p>
       {person.known_for_department && (
         <p className="mt-1 text-xs text-gray-400">{person.known_for_department}</p>
       )}

@@ -32,6 +32,7 @@ import {
   validateSearchQuery,
 } from "./validation";
 import { buildIndustryQueryString } from "@/lib/movie-industries";
+import { buildTvRegionQueryString } from "@/lib/tv-regions";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
@@ -202,6 +203,7 @@ export async function discoverMedia(
     genreId = null,
     sortBy = "popularity.desc",
     industryId = null,
+    regionId = null,
   }: DiscoverParams = {}
 ): Promise<DiscoverResponse> {
   const type = validateMediaType(mediaType);
@@ -210,9 +212,10 @@ export async function discoverMedia(
   const genreParam = genreId ? `&with_genres=${genreId}` : "";
   const industryParam =
     type === "movie" ? buildIndustryQueryString(industryId) : "";
+  const regionParam = type === "tv" ? buildTvRegionQueryString(regionId) : "";
 
   const data = await tmdbFetch<TMDBPaginatedResponse<Movie | TVShow>>(
-    `/discover/${type}?sort_by=${sort}&page=${page}${genreParam}${industryParam}`
+    `/discover/${type}?sort_by=${sort}&page=${page}${genreParam}${industryParam}${regionParam}`
   );
 
   return {
@@ -315,7 +318,8 @@ export async function fetchRecommendations(
   const mediaId = validateMediaId(id);
 
   const data = await tmdbFetch<TMDBPaginatedResponse<Movie | TVShow>>(
-    `/${type}/${mediaId}/recommendations?language=en-US`
+    `/${type}/${mediaId}/recommendations?language=en-US`,
+    REVALIDATE.detail
   );
 
   return data.results;

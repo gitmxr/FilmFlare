@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import HomeHubContent from "@/components/home/HomeHubContent";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import HomeHubSkeleton from "@/components/ui/skeletons/HomeHubSkeleton";
 import {
   fetchNowPlayingMovies,
   fetchTopRatedMovies,
@@ -11,17 +10,17 @@ import {
   fetchTrendingTV,
 } from "@/lib/api/tmdb";
 import type { TrendingMediaItem } from "@/lib/types";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+/** Home hub: refresh trending/popular sections hourly (see REVALIDATE.movies). */
+export const revalidate = 3600;
+
+export const metadata = buildPageMetadata({
   title: "Home",
   description:
     "Discover trending movies, TV shows, web series, music, and people — all in one place on CineFilly",
-  openGraph: {
-    title: "CineFilly — Movies, TV & More",
-    description:
-      "Discover trending movies, TV shows, web series, music, and people in one place",
-  },
-};
+  path: "/",
+});
 
 async function fetchSection<T>(
   fetcher: (page: number) => Promise<T[]>,
@@ -76,7 +75,7 @@ async function HomePageData() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<LoadingSpinner label="Loading..." />}>
+    <Suspense fallback={<HomeHubSkeleton />}>
       <HomePageData />
     </Suspense>
   );

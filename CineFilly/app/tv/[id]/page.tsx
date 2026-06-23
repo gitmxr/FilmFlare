@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import TVDetailView from "@/components/tv/TVDetailView";
+import JsonLd from "@/components/seo/JsonLd";
 import { ApiError } from "@/lib/api/errors";
 import { fetchTrendingTV, fetchTVDetail } from "@/lib/api/tmdb";
+import {
+  absoluteUrl,
+  buildPageMetadata,
+  truncateDescription,
+} from "@/lib/seo/metadata";
 import { POSTER_BASE_URL } from "@/lib/types";
 
 export const revalidate = 86400;
@@ -32,21 +38,27 @@ export async function generateMetadata({
     const posterUrl = show.poster_path
       ? `${POSTER_BASE_URL}${show.poster_path}`
       : undefined;
+    const description = truncateDescription(
+      show.overview,
+      160,
+      `Watch ${show.name} — cast, trailer, ratings, and similar shows on CineFilly.`
+    );
 
-    return {
+    return buildPageMetadata({
       title: show.name,
-      description: show.overview,
-      openGraph: {
-        title: show.name,
-        description: show.overview,
-        images: posterUrl ? [{ url: posterUrl }] : [],
-      },
-    };
+      description,
+      path: `/tv/${id}`,
+      images: posterUrl ? [posterUrl] : undefined,
+      type: "article",
+    });
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
-      return { title: "TV Show Not Found" };
+      return buildPageMetadata({
+        title: "TV Show Not Found",
+        noIndex: true,
+      });
     }
-    return { title: "TV Show" };
+    return buildPageMetadata({ title: "TV Show" });
   }
 }
 
@@ -63,5 +75,35 @@ export default async function TVDetailPage({ params }: TVDetailPageProps) {
     throw error;
   }
 
-  return <TVDetailView data={data} />;
+  const { show } = data;
+  const posterUrl = show.poster_path
+    ? `${POSTER_BASE_URL}${show.poster_path}`
+    : undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    name: show.name,
+    description: truncateDescription(show.overview, 300),
+    image: posterUrl,
+    datePublished: show.first_air_date || undefined,
+    aggregateRating:
+      show.vote_count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: show.vote_average,
+            ratingCount: show.vote_count,
+            bestRating: 10,
+            worstRating: 0,
+          }
+        : undefined,
+    url: absoluteUrl(`/tv/${show.id}`),
+  };
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <TVDetailView data={data} />
+    </>
+  );
 }

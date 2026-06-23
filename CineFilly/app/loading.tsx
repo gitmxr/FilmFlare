@@ -1,5 +1,5 @@
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import HomeHubSkeleton from "@/components/ui/skeletons/HomeHubSkeleton";
 
 export default function Loading() {
-  return <LoadingSpinner label="Loading..." />;
+  return <HomeHubSkeleton />;
 }

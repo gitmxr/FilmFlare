@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import Providers from "@/app/providers";
-import PageTransition from "@/components/animations/PageTransition";
 import ClientWidgets from "@/components/layout/ClientWidgets";
 import Footer from "@/components/ui/Footer";
 import Header from "@/components/ui/Header";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
+  DEFAULT_OG_IMAGE_PATH,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo/metadata";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -16,28 +22,32 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : undefined,
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "CineFilly",
-    template: "%s | CineFilly",
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: "Discover movies, TV shows, music trailers, top-rated films, and cast profiles.",
+  description: DEFAULT_DESCRIPTION,
+  keywords: DEFAULT_KEYWORDS,
   openGraph: {
     type: "website",
-    siteName: "CineFilly",
-    title: "CineFilly",
-    description: "Discover movies, TV shows, music trailers, top-rated films, and cast profiles.",
+    locale: "en_US",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    images: [{ url: DEFAULT_OG_IMAGE_PATH, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CineFilly",
-    description: "Discover movies, TV shows, music trailers, top-rated films, and cast profiles.",
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE_PATH],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 
@@ -64,7 +74,7 @@ export default function RootLayout({
           <ScrollToTop />
           <Header />
           <main id="main-content" className="flex-grow">
-            <PageTransition>{children}</PageTransition>
+            {children}
           </main>
           <Footer />
           <ClientWidgets />

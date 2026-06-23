@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MusicDetailView from "@/components/music/MusicDetailView";
+import JsonLd from "@/components/seo/JsonLd";
 import { ApiError } from "@/lib/api/errors";
 import { fetchMusicDetail } from "@/lib/api/youtube";
+import {
+  absoluteUrl,
+  buildPageMetadata,
+  youtubeThumbnailUrl,
+} from "@/lib/seo/metadata";
 
 export const revalidate = 86400;
 
@@ -18,19 +24,24 @@ export async function generateMetadata({
 
   try {
     const data = await fetchMusicDetail(id);
-    return {
+    const thumbnail = youtubeThumbnailUrl(id);
+
+    return buildPageMetadata({
       title: data.title,
-      description: `Watch ${data.title} by ${data.channelTitle}`,
-      openGraph: {
-        title: data.title,
-        description: `Watch ${data.title} by ${data.channelTitle}`,
-      },
-    };
+      description: `Watch ${data.title} by ${data.channelTitle} on CineFilly.`,
+      path: `/music/${id}`,
+      images: [thumbnail],
+      type: "video.other",
+      keywords: ["music", data.channelTitle, data.title, "CineFilly"],
+    });
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
-      return { title: "Music Not Found" };
+      return buildPageMetadata({
+        title: "Music Not Found",
+        noIndex: true,
+      });
     }
-    return { title: "Music" };
+    return buildPageMetadata({ title: "Music" });
   }
 }
 
@@ -56,5 +67,19 @@ export default async function MusicDetailPage({
     throw error;
   }
 
-  return <MusicDetailView data={data} videoId={data.videoId} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MusicVideoObject",
+    name: data.title,
+    description: `Music video by ${data.channelTitle}`,
+    thumbnailUrl: youtubeThumbnailUrl(data.videoId),
+    url: absoluteUrl(`/music/${data.videoId}`),
+  };
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <MusicDetailView data={data} videoId={data.videoId} />
+    </>
+  );
 }

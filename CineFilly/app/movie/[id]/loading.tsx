@@ -1,5 +1,5 @@
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import DetailPageSkeleton from "@/components/ui/skeletons/DetailPageSkeleton";
 
 export default function MovieDetailLoading() {
-  return <LoadingSpinner label="Loading movie..." />;
+  return <DetailPageSkeleton />;
 }

@@ -9,7 +9,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/movies", label: "Movies" },
-  { href: "/explore/tv", label: "TV & Series" },
+  { href: "/tv", label: "TV & Series" },
   { href: "/music", label: "Music" },
 ];
 
@@ -20,8 +20,8 @@ function isNavActive(pathname: string, href: string): boolean {
   if (href === "/movies") {
     return pathname === "/movies" || pathname.startsWith("/movie/");
   }
-  if (href === "/explore/tv") {
-    return pathname === "/explore/tv" || pathname.startsWith("/tv/");
+  if (href === "/tv") {
+    return pathname === "/tv" || pathname.startsWith("/tv/");
   }
   return pathname.startsWith(href);
 }
@@ -42,10 +42,10 @@ function NavItem({
       href={href}
       onClick={onNavigate}
       aria-current={isActive ? "page" : undefined}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+      className={`px-3 py-2 text-sm transition ${
         isActive
-          ? "bg-red-600/15 text-red-400 ring-1 ring-red-500/30"
-          : "text-gray-300 hover:bg-white/5 hover:text-white"
+          ? "font-semibold text-red-500"
+          : "font-medium text-gray-300 hover:text-white"
       }`}
     >
       {label}
@@ -81,7 +81,7 @@ export default function Header() {
 
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-1 md:flex"
+          className="hidden items-center gap-6 md:flex"
         >
           {navLinks.map(({ href, label }) => (
             <NavItem
@@ -111,7 +111,7 @@ export default function Header() {
           aria-label="Mobile navigation"
           className="border-t border-white/10 bg-gray-950/95 px-4 py-3 md:hidden"
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             {navLinks.map(({ href, label }) => (
               <NavItem
                 key={href}

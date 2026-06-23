@@ -10,7 +10,7 @@ const categories = [
     accent: "from-red-600/20 to-red-900/10",
   },
   {
-    href: "/explore/tv",
+    href: "/tv",
     label: "TV & Web Series",
     description: "Binge-worthy shows and streaming series",
     icon: FaTv,

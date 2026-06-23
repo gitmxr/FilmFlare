@@ -1,19 +1,45 @@
 import type { MetadataRoute } from "next";
-import {
-  fetchTrendingMovies,
-  fetchTrendingTV,
-} from "@/lib/api/tmdb";
+import { SITE_URL } from "@/lib/seo/metadata";
+import { fetchTrendingMovies, fetchTrendingTV } from "@/lib/api/tmdb";
+
+/** Regenerate sitemap hourly alongside trending data TTL. */
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cine-filly.vercel.app";
+  const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: baseUrl, changeFrequency: "hourly", priority: 1 },
-    { url: `${baseUrl}/movies`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/explore/tv`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/music`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/about`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/contact`, changeFrequency: "monthly", priority: 0.5 },
+    { url: SITE_URL, lastModified: now, changeFrequency: "hourly", priority: 1 },
+    {
+      url: `${SITE_URL}/movies`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/tv`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/music`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/about`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITE_URL}/contact`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   try {
@@ -23,16 +49,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const movieRoutes: MetadataRoute.Sitemap = trendingMovies
-      .slice(0, 50)
+      .slice(0, 24)
       .map((movie) => ({
-        url: `${baseUrl}/movie/${movie.id}`,
-        changeFrequency: "weekly",
+        url: `${SITE_URL}/movie/${movie.id}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
         priority: 0.8,
       }));
 
-    const tvRoutes: MetadataRoute.Sitemap = trendingTV.slice(0, 50).map((show) => ({
-      url: `${baseUrl}/tv/${show.id}`,
-      changeFrequency: "weekly",
+    const tvRoutes: MetadataRoute.Sitemap = trendingTV.slice(0, 24).map((show) => ({
+      url: `${SITE_URL}/tv/${show.id}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
       priority: 0.8,
     }));
 

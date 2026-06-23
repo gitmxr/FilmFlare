@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import EmptyState from "@/components/ui/EmptyState";
+import MusicGridSkeleton from "@/components/ui/skeletons/MusicGridSkeleton";
 import MusicGrid from "@/components/music/MusicGrid";
 import MusicSection from "@/components/music/MusicSection";
 import { useMusicStore } from "@/lib/stores/musicStore";
@@ -79,8 +80,8 @@ export default function MusicContent({ sections }: MusicContentProps) {
         )}
 
         {loading && hasSearched ? (
-          <div className="flex justify-center py-12" aria-live="polite">
-            <LoadingSpinner label="Searching music..." />
+          <div className="py-6" aria-live="polite">
+            <MusicGridSkeleton count={8} />
           </div>
         ) : (
           <>
@@ -109,9 +110,11 @@ export default function MusicContent({ sections }: MusicContentProps) {
             )}
 
             {hasSearched && !loading && searchResults.length === 0 && !error && (
-              <p className="mb-10 text-center text-gray-400">
-                No music found for &ldquo;{searchQuery}&rdquo;
-              </p>
+              <EmptyState
+                title={`No music found for "${searchQuery}"`}
+                description="Try a different artist, song, or genre."
+                action={{ label: "Browse Music", href: "/music" }}
+              />
             )}
 
             {!hasSearched && (

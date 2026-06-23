@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import MusicContent from "@/components/music/MusicContent";
 import { searchYouTubeMusic } from "@/lib/api/youtube";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import type { YouTubeSearchItem } from "@/lib/types";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Music",
-  description: "Discover Indian, Pakistani, and English music videos",
-  openGraph: {
-    title: "Music | CineFilly",
-    description: "Discover Indian, Pakistani, and English music videos",
-  },
-};
+  description:
+    "Discover Indian, Pakistani, and English music videos and soundtracks on CineFilly.",
+  path: "/music",
+  keywords: [
+    "music videos",
+    "indian songs",
+    "pakistani songs",
+    "english pop",
+    "soundtracks",
+    "CineFilly",
+  ],
+});
 
 export const revalidate = 1800;
 
@@ -30,12 +37,15 @@ export default async function MusicPage() {
   ]);
 
   return (
-    <MusicContent
-      sections={{
-        indian,
-        pakistani,
-        english,
-      }}
-    />
+    <>
+      <h1 className="sr-only">Music — Indian, Pakistani &amp; English Videos</h1>
+      <MusicContent
+        sections={{
+          indian,
+          pakistani,
+          english,
+        }}
+      />
+    </>
   );
 }

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import MovieDetailView from "@/components/movies/MovieDetailView";
+import JsonLd from "@/components/seo/JsonLd";
 import { ApiError } from "@/lib/api/errors";
+import { fetchMovieDetail, fetchTrendingMovies } from "@/lib/api/tmdb";
 import {
-  fetchMovieDetail,
-  fetchTrendingMovies,
-} from "@/lib/api/tmdb";
+  absoluteUrl,
+  buildPageMetadata,
+  truncateDescription,
+} from "@/lib/seo/metadata";
 import { POSTER_BASE_URL } from "@/lib/types";
 
 export const revalidate = 86400;
@@ -35,21 +38,27 @@ export async function generateMetadata({
     const posterUrl = movie.poster_path
       ? `${POSTER_BASE_URL}${movie.poster_path}`
       : undefined;
+    const description = truncateDescription(
+      movie.overview,
+      160,
+      `Watch ${movie.title} — cast, trailer, ratings, and similar movies on CineFilly.`
+    );
 
-    return {
+    return buildPageMetadata({
       title: movie.title,
-      description: movie.overview,
-      openGraph: {
-        title: movie.title,
-        description: movie.overview,
-        images: posterUrl ? [{ url: posterUrl }] : [],
-      },
-    };
+      description,
+      path: `/movie/${id}`,
+      images: posterUrl ? [posterUrl] : undefined,
+      type: "article",
+    });
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
-      return { title: "Movie Not Found" };
+      return buildPageMetadata({
+        title: "Movie Not Found",
+        noIndex: true,
+      });
     }
-    return { title: "Movie" };
+    return buildPageMetadata({ title: "Movie" });
   }
 }
 
@@ -66,5 +75,35 @@ export default async function MovieDetailPage({ params }: MovieDetailPageProps) 
     throw error;
   }
 
-  return <MovieDetailView data={data} />;
+  const { movie } = data;
+  const posterUrl = movie.poster_path
+    ? `${POSTER_BASE_URL}${movie.poster_path}`
+    : undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    name: movie.title,
+    description: truncateDescription(movie.overview, 300),
+    image: posterUrl,
+    datePublished: movie.release_date || undefined,
+    aggregateRating:
+      movie.vote_count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: movie.vote_average,
+            ratingCount: movie.vote_count,
+            bestRating: 10,
+            worstRating: 0,
+          }
+        : undefined,
+    url: absoluteUrl(`/movie/${movie.id}`),
+  };
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <MovieDetailView data={data} />
+    </>
+  );
 }

@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 const ContactForm = dynamic(() => import("@/components/contact/ContactForm"));
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Contact",
-  description: "Get in touch with the CineFilly team.",
-};
+  description: "Get in touch with the CineFilly team for questions, feedback, or collaboration.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

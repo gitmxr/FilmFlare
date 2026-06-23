@@ -31,7 +31,7 @@ export default function PopularSection({ movies, tvShows }: PopularSectionProps)
             onChange={setActiveTab}
           />
           <Link
-            href={activeTab === "movie" ? "/movies" : "/explore/tv"}
+            href={activeTab === "movie" ? "/movies" : "/tv"}
             className="text-sm text-red-400 transition hover:text-red-300"
           >
             View all →

@@ -3,10 +3,12 @@
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MediaCard from "@/components/media/MediaCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { DISCOVER_SORT_OPTIONS } from "@/lib/explore-constants";
+import EmptyState from "@/components/ui/EmptyState";
+import MediaGridSkeleton from "@/components/ui/skeletons/MediaGridSkeleton";
+import FilterSelect from "@/components/ui/FilterSelect";
 import { CARD_GRID_CLASS } from "@/lib/card-layout";
 import { fetcher } from "@/lib/api/client";
+import { buildGenreFilterOptions, SORT_FILTER_OPTIONS } from "@/lib/filter-options";
 import { DEFAULT_MOVIE_INDUSTRY, MOVIE_INDUSTRIES } from "@/lib/movie-industries";
 import type { DiscoverResponse, Genre, Movie } from "@/lib/types";
 
@@ -112,6 +114,7 @@ export default function MoviesBrowseContent({
     setGenreId(nextGenre);
     setSort(nextSort);
     setIndustry(nextIndustry);
+    setItems([]);
     await fetchDiscover(1, false, {
       genre: nextGenre,
       sort: nextSort,
@@ -125,6 +128,11 @@ export default function MoviesBrowseContent({
   };
 
   const hasMore = page < totalPages;
+  const genreOptions = buildGenreFilterOptions(genres);
+  const industryOptions = MOVIE_INDUSTRIES.map((item) => ({
+    value: item.id,
+    label: item.label,
+  }));
 
   return (
     <div className="min-h-screen bg-black px-4 pb-20 pt-6 text-white sm:px-6">
@@ -140,58 +148,31 @@ export default function MoviesBrowseContent({
           </p>
         </div>
 
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <label className="flex flex-col gap-2 text-sm text-gray-300">
-            Genre
-            <select
-              value={genreId}
-              onChange={(event) =>
-                handleFilterChange(event.target.value, sort, industry)
-              }
-              className="rounded-lg border border-white/10 bg-gray-900/80 px-3 py-2.5 text-white outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500/40"
-            >
-              <option value="">All genres</option>
-              {genres.map((genre) => (
-                <option key={genre.id} value={genre.id}>
-                  {genre.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm text-gray-300">
-            Industry
-            <select
-              value={industry}
-              onChange={(event) =>
-                handleFilterChange(genreId, sort, event.target.value)
-              }
-              className="rounded-lg border border-white/10 bg-gray-900/80 px-3 py-2.5 text-white outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500/40"
-            >
-              {MOVIE_INDUSTRIES.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm text-gray-300 sm:col-span-2 lg:col-span-1">
-            Sort by
-            <select
-              value={sort}
-              onChange={(event) =>
-                handleFilterChange(genreId, event.target.value, industry)
-              }
-              className="rounded-lg border border-white/10 bg-gray-900/80 px-3 py-2.5 text-white outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500/40"
-            >
-              {DISCOVER_SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <FilterSelect
+            label="Genre"
+            value={genreId}
+            options={genreOptions}
+            onChange={(nextGenre) =>
+              handleFilterChange(nextGenre, sort, industry)
+            }
+          />
+          <FilterSelect
+            label="Industry"
+            value={industry}
+            options={industryOptions}
+            onChange={(nextIndustry) =>
+              handleFilterChange(genreId, sort, nextIndustry)
+            }
+          />
+          <FilterSelect
+            label="Sort by"
+            value={sort}
+            options={SORT_FILTER_OPTIONS}
+            onChange={(nextSort) =>
+              handleFilterChange(genreId, nextSort, industry)
+            }
+          />
         </div>
 
         {error && (
@@ -200,29 +181,34 @@ export default function MoviesBrowseContent({
           </p>
         )}
 
-        {items.length === 0 && !loading ? (
-          <p className="py-12 text-center text-gray-400">No movies found.</p>
+        {loading && items.length === 0 ? (
+          <MediaGridSkeleton count={12} />
+        ) : items.length === 0 ? (
+          <EmptyState
+            title="No movies found"
+            description="Try a different genre, industry, or sort option."
+            action={{ label: "Back to Home", href: "/" }}
+          />
         ) : (
-          <div className={CARD_GRID_CLASS}>
-            {items.map((item) => (
-              <MediaCard key={item.id} item={item} mediaType="movie" />
-            ))}
-          </div>
+          <>
+            <div className={CARD_GRID_CLASS}>
+              {items.map((item) => (
+                <MediaCard key={item.id} item={item} mediaType="movie" />
+              ))}
+            </div>
+            {loading && <MediaGridSkeleton count={4} className={`mt-4 ${CARD_GRID_CLASS}`} />}
+          </>
         )}
 
         <div className="mt-10 flex justify-center">
-          {loading ? (
-            <LoadingSpinner label="Loading..." />
-          ) : (
-            hasMore && (
-              <button
-                type="button"
-                onClick={() => fetchDiscover(page + 1, true)}
-                className="rounded-full bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
-              >
-                Load more
-              </button>
-            )
+          {!loading && hasMore && (
+            <button
+              type="button"
+              onClick={() => fetchDiscover(page + 1, true)}
+              className="rounded-full bg-red-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
+            >
+              Load more
+            </button>
           )}
         </div>
       </div>

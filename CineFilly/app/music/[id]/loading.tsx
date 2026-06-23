@@ -1,5 +1,5 @@
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import MusicDetailSkeleton from "@/components/ui/skeletons/MusicDetailSkeleton";
 
 export default function MusicDetailLoading() {
-  return <LoadingSpinner label="Loading music..." />;
+  return <MusicDetailSkeleton />;
 }

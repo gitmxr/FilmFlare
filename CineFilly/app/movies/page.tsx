@@ -1,23 +1,36 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import MoviesBrowseContent from "@/components/movies/MoviesBrowseContent";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import BrowsePageSkeleton from "@/components/ui/skeletons/BrowsePageSkeleton";
 import { discoverMedia, fetchGenres } from "@/lib/api/tmdb";
+import { getMovieIndustry } from "@/lib/movie-industries";
 import { parseMoviesBrowseParams } from "@/lib/movies-params";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "Movies",
-  description:
-    "Browse movies by genre, industry, and rating — Hollywood, Bollywood, Lollywood, and more on CineFilly",
-  openGraph: {
-    title: "Movies | CineFilly",
-    description:
-      "Browse movies by genre, industry, and rating — Hollywood, Bollywood, Lollywood, and more",
-  },
-};
+/** Browse grid ISR — aligns with TMDB list cache TTL. */
+export const revalidate = 3600;
 
 interface MoviesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: MoviesPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const industryRaw =
+    typeof params.industry === "string" ? params.industry : undefined;
+  const industry = industryRaw ? getMovieIndustry(industryRaw) : undefined;
+
+  const title = industry && industry.id !== "all"
+    ? `${industry.label} Movies`
+    : "Movies";
+
+  const description = industry && industry.id !== "all"
+    ? `Browse ${industry.label} movies by genre, rating, and popularity on CineFilly.`
+    : "Browse movies by genre, industry, and rating — Hollywood, Bollywood, Lollywood, and more on CineFilly";
+
+  return buildPageMetadata({ title, description, path: "/movies" });
 }
 
 async function MoviesPageData({
@@ -52,7 +65,7 @@ async function MoviesPageData({
 
 export default function MoviesPage({ searchParams }: MoviesPageProps) {
   return (
-    <Suspense fallback={<LoadingSpinner label="Loading movies..." />}>
+    <Suspense fallback={<BrowsePageSkeleton showIndustryFilter />}>
       <MoviesPageData searchParams={searchParams} />
     </Suspense>
   );

@@ -145,6 +145,7 @@ export interface DiscoverParams {
   genreId?: number | null;
   sortBy?: DiscoverSortKey;
   industryId?: string | null;
+  regionId?: string | null;
 }
 
 export interface HomeHubData {
@@ -160,12 +161,6 @@ export interface HomeHubData {
 export const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500";
 export const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/w1280";
 export const PROFILE_BASE_URL = "https://image.tmdb.org/t/p/w185";
-
-export type MoviePageParam =
-  | "trendingPage"
-  | "topRatedPage"
-  | "bollywoodPage"
-  | "hollywoodPage";
 
 export interface MovieDetailData {
   movie: MovieDetail;

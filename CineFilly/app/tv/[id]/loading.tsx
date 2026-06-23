@@ -1,9 +1,5 @@
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import DetailPageSkeleton from "@/components/ui/skeletons/DetailPageSkeleton";
 
 export default function TVDetailLoading() {
-  return (
-    <div className="flex min-h-[50vh] items-center justify-center bg-black">
-      <LoadingSpinner label="Loading TV show..." />
-    </div>
-  );
+  return <DetailPageSkeleton />;
 }

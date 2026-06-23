@@ -21,7 +21,7 @@ export default function PersonDetailView({ data }: PersonDetailViewProps) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "People", href: "/search/actors" },
+            { label: "People", href: "/search/people" },
             { label: person.name },
           ]}
         />

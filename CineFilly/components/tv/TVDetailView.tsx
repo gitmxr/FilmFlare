@@ -48,12 +48,12 @@ export default function TVDetailView({ data }: TVDetailViewProps) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "TV Shows", href: "/explore/tv" },
+            { label: "TV Shows", href: "/tv" },
             { label: show.name },
           ]}
         />
         <Link
-          href="/explore/tv"
+          href="/tv"
           className="mb-4 inline-flex items-center gap-1 rounded bg-red-600 px-3 py-1 text-sm transition duration-200 hover:bg-red-700 sm:mb-6"
         >
           ← Back to TV Shows

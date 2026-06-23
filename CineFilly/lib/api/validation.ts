@@ -1,5 +1,6 @@
 import { ApiError } from "@/lib/api/errors";
 import { DEFAULT_MOVIE_INDUSTRY, MOVIE_INDUSTRIES } from "@/lib/movie-industries";
+import { DEFAULT_TV_REGION, TV_REGIONS } from "@/lib/tv-regions";
 import type { DiscoverSortKey, MediaType } from "@/lib/types";
 
 export const MAX_PAGE = 500;
@@ -76,6 +77,15 @@ export function validateMovieIndustry(
   const isValid = MOVIE_INDUSTRIES.some((item) => item.id === value);
   if (!isValid) {
     throw new ApiError("Invalid industry filter", 400);
+  }
+  return value;
+}
+
+export function validateTvRegion(region: string | null | undefined): string {
+  const value = (region ?? DEFAULT_TV_REGION).trim().toLowerCase();
+  const isValid = TV_REGIONS.some((item) => item.id === value);
+  if (!isValid) {
+    throw new ApiError("Invalid region filter", 400);
   }
   return value;
 }

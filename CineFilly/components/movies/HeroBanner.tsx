@@ -81,7 +81,7 @@ export default function HeroBanner({
               Browse Movies
             </Link>
             <Link
-              href="/explore/tv"
+              href="/tv"
               className="rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500 hover:text-red-400 sm:px-5"
             >
               TV & Web Series

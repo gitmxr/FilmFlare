@@ -2,37 +2,57 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import ExploreContent from "@/components/explore/ExploreContent";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import BrowsePageSkeleton from "@/components/ui/skeletons/BrowsePageSkeleton";
 import { ApiError } from "@/lib/api/errors";
 import {
-  validateDiscoverSort,
-  validateGenreId,
   validateMediaType,
-  parsePageNumber,
 } from "@/lib/api/validation";
 import { discoverMedia, fetchGenres } from "@/lib/api/tmdb";
+import { parseTvBrowseParams } from "@/lib/tv-params";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { getTvRegion } from "@/lib/tv-regions";
 
 interface ExplorePageProps {
   params: Promise<{ mediaType: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+/** TV browse ISR — aligns with TMDB discover cache TTL. */
+export const revalidate = 3600;
+
 export async function generateMetadata({
   params,
+  searchParams,
 }: ExplorePageProps): Promise<Metadata> {
   const { mediaType } = await params;
+  const query = await searchParams;
+
+  if (mediaType === "movie") {
+    return buildPageMetadata({
+      title: "Movies",
+      description: "Browse movies on CineFilly",
+      path: "/movies",
+    });
+  }
 
   try {
-    const type = validateMediaType(mediaType);
-    return {
-      title: type === "movie" ? "Explore Movies" : "Explore TV Shows",
+    validateMediaType(mediaType);
+    const regionRaw =
+      typeof query.region === "string" ? query.region : undefined;
+    const region = regionRaw ? getTvRegion(regionRaw) : undefined;
+    const title =
+      region && region.id !== "all"
+        ? `${region.label} TV & Web Series`
+        : "TV & Web Series";
+
+    return buildPageMetadata({
+      title,
       description:
-        type === "movie"
-          ? "Browse and filter movies by genre and rating on CineFilly"
-          : "Browse and filter TV shows by genre and rating on CineFilly",
-    };
+        "Browse and filter TV shows and web series by genre, region, and rating on CineFilly",
+      path: "/tv",
+    });
   } catch {
-    return { title: "Explore" };
+    return buildPageMetadata({ title: "Explore", path: "/tv" });
   }
 }
 
@@ -43,14 +63,20 @@ async function ExplorePageData({
   const { mediaType } = await params;
   const query = await searchParams;
 
-  if (mediaType === "movie") {
+  if (mediaType === "movie" || mediaType === "tv") {
     const sp = new URLSearchParams();
     if (typeof query.genre === "string") sp.set("genre", query.genre);
     if (typeof query.sort === "string") sp.set("sort", query.sort);
     if (typeof query.page === "string") sp.set("page", query.page);
-    if (typeof query.industry === "string") sp.set("industry", query.industry);
+    if (mediaType === "movie" && typeof query.industry === "string") {
+      sp.set("industry", query.industry);
+    }
+    if (mediaType === "tv" && typeof query.region === "string") {
+      sp.set("region", query.region);
+    }
     const qs = sp.toString();
-    redirect(`/movies${qs ? `?${qs}` : ""}`);
+    const target = mediaType === "movie" ? "/movies" : "/tv";
+    redirect(`${target}${qs ? `?${qs}` : ""}`);
   }
 
   let type;
@@ -60,19 +86,11 @@ async function ExplorePageData({
     notFound();
   }
 
-  const genreId = validateGenreId(
-    typeof query.genre === "string" ? query.genre : undefined
-  );
-  const sortBy = validateDiscoverSort(
-    typeof query.sort === "string" ? query.sort : undefined
-  );
-  const page = parsePageNumber(
-    typeof query.page === "string" ? query.page : undefined
-  );
+  const { genreId, sortBy, regionId, page } = parseTvBrowseParams(query);
 
   const [genres, initialData] = await Promise.all([
     fetchGenres(type).catch(() => []),
-    discoverMedia(type, { page, genreId, sortBy }).catch(() => ({
+    discoverMedia(type, { page, genreId, sortBy, regionId }).catch(() => ({
       page: 1,
       results: [],
       total_pages: 1,
@@ -82,19 +100,20 @@ async function ExplorePageData({
 
   return (
     <ExploreContent
-      key={`${type}-${genreId ?? "all"}-${sortBy}-${page}`}
+      key={`${type}-${genreId ?? "all"}-${sortBy}-${regionId}-${page}`}
       mediaType={type}
       genres={genres}
       initialData={initialData}
       initialGenre={genreId}
       initialSort={sortBy}
+      initialRegion={regionId}
     />
   );
 }
 
 export default function ExplorePage(props: ExplorePageProps) {
   return (
-    <Suspense fallback={<LoadingSpinner label="Loading explore page..." />}>
+    <Suspense fallback={<BrowsePageSkeleton showRegionFilter />}>
       <ExplorePageData {...props} />
     </Suspense>
   );

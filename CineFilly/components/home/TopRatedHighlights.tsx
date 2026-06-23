@@ -37,7 +37,7 @@ export default function TopRatedHighlights({
             href={
               activeTab === "movie"
                 ? "/movies?sort=vote_average.desc"
-                : "/explore/tv?sort=vote_average.desc"
+                : "/tv?sort=vote_average.desc"
             }
             className="text-sm text-red-400 transition hover:text-red-300"
           >

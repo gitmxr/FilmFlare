@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo/metadata";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cine-filly.vercel.app";
-
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      // Search result pages are utility views — keep out of the index to avoid thin/duplicate content.
+      disallow: ["/api/", "/search/"],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }
